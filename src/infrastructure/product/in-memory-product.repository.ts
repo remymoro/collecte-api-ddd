@@ -6,12 +6,26 @@ export class InMemoryProductRepository implements ProductRepository {
 
   constructor(initial: Product[] = []) {
     for (const product of initial) {
-      this.products.set(product.reference, product);
+      // Clone via rehydrate pour éviter les mutations
+      const snapshot = Product.rehydrate({
+        reference: product.reference,
+        family: product.family,
+        subFamily: product.subFamily,
+        isActive: product.isActive,
+      });
+      this.products.set(product.reference, snapshot);
     }
   }
 
   async save(product: Product): Promise<void> {
-    this.products.set(product.reference, product);
+    // Clone via rehydrate pour éviter les mutations
+    const snapshot = Product.rehydrate({
+      reference: product.reference,
+      family: product.family,
+      subFamily: product.subFamily,
+      isActive: product.isActive,
+    });
+    this.products.set(product.reference, snapshot);
   }
 
   async findByReference(reference: string): Promise<Product | null> {
@@ -28,4 +42,3 @@ export class InMemoryProductRepository implements ProductRepository {
     );
   }
 }
-

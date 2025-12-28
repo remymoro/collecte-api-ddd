@@ -5,6 +5,7 @@ import { ProductController } from '../src/presentation/product/product.controlle
 import { FakeAuthGuard } from '../src/presentation/auth/fake-auth.guard';
 import { CreateProductUseCase } from '../src/application/product/create-product.usecase';
 import { UpdateProductUseCase } from '../src/application/product/update-product.usecase';
+import { ArchiveProductUseCase } from '../src/application/product/archive-product.usecase';
 import { ListProductsUseCase } from '../src/application/product/list-products.usecase';
 import { InMemoryProductRepository } from '../src/infrastructure/product/in-memory-product.repository';
 import { DomainExceptionFilter } from '../src/presentation/filters/domain-exception.filter';
@@ -20,11 +21,12 @@ describe('Product admin (e2e)', () => {
         FakeAuthGuard,
         CreateProductUseCase,
         UpdateProductUseCase,
+        ArchiveProductUseCase,
         ListProductsUseCase,
         {
           provide: 'ProductRepository',
           useValue: new InMemoryProductRepository([
-            new Product('EXISTING', 'Ancienne famille'),
+            Product.create({ reference: 'EXISTING', family: 'Ancienne famille' }),
           ]),
         },
       ],
@@ -55,6 +57,7 @@ describe('Product admin (e2e)', () => {
           reference: 'PROD_1',
           family: 'Protéines',
           subFamily: 'Sans porc',
+          isActive: true,
         });
       });
   });
@@ -87,6 +90,7 @@ describe('Product admin (e2e)', () => {
           reference: 'EXISTING',
           family: 'Famille corrigée',
           subFamily: 'Sous-famille corrigée',
+          isActive: true,
         });
       });
   });
@@ -125,9 +129,9 @@ describe('Product admin (e2e)', () => {
 
     expect(res.body).toEqual(
       expect.arrayContaining([
-        { reference: 'EXISTING', family: 'Ancienne famille', subFamily: undefined },
-        { reference: 'PROD_A', family: 'Famille A', subFamily: undefined },
-        { reference: 'PROD_B', family: 'Famille B', subFamily: 'Sous B' },
+        { reference: 'EXISTING', family: 'Ancienne famille', isActive: true },
+        { reference: 'PROD_A', family: 'Famille A', isActive: true },
+        { reference: 'PROD_B', family: 'Famille B', subFamily: 'Sous B', isActive: true },
       ]),
     );
   });

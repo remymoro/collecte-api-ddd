@@ -6,7 +6,10 @@ import { ProductNotFoundError } from '../../../domain/product/errors/product-not
 describe('ArchiveProductUseCase', () => {
   it('archive un produit existant', async () => {
     const repo = new InMemoryProductRepository([
-      new Product('PROD_1', 'Famille'),
+      Product.create({
+        reference: 'PROD_1',
+        family: 'Famille',
+      }),
     ]);
 
     const useCase = new ArchiveProductUseCase(repo);
@@ -17,7 +20,7 @@ describe('ArchiveProductUseCase', () => {
     expect(product?.isActive).toBe(false);
   });
 
-  it('échoue si le produit n’existe pas', async () => {
+  it('échoue si le produit n\'existe pas', async () => {
     const repo = new InMemoryProductRepository();
     const useCase = new ArchiveProductUseCase(repo);
 

@@ -4,7 +4,7 @@ import { ProductAlreadyExistsError } from '../../../domain/product/errors/produc
 import { InMemoryProductRepository } from '../../../infrastructure/product/in-memory-product.repository';
 
 describe('CreateProductUseCase', () => {
-  it('crée un produit si la référence n’existe pas', async () => {
+  it('crée un produit si la référence n\'existe pas', async () => {
     const productRepo = new InMemoryProductRepository([]);
     const useCase = new CreateProductUseCase(productRepo);
 
@@ -24,7 +24,10 @@ describe('CreateProductUseCase', () => {
   });
 
   it('refuse la création si la référence existe déjà', async () => {
-    const existing = new Product('PROD_1', 'Famille 1');
+    const existing = Product.create({
+      reference: 'PROD_1',
+      family: 'Famille 1',
+    });
 
     const productRepo = new InMemoryProductRepository([existing]);
     const useCase = new CreateProductUseCase(productRepo);

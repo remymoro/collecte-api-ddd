@@ -36,9 +36,9 @@ describe('Collecte entries (e2e)', () => {
         {
           provide: 'ProductRepository',
           useValue: new InMemoryProductRepository([
-            new Product('PROD_1', 'Famille 1', 'SousFamille 1'),
-            new Product('PROD_2', 'Protéines', 'Sans porc'),
-            new Product('PROD_3', 'Divers'),
+            Product.create({ reference: 'PROD_1', family: 'Famille 1', subFamily: 'SousFamille 1' }),
+            Product.create({ reference: 'PROD_2', family: 'Protéines', subFamily: 'Sans porc' }),
+            Product.create({ reference: 'PROD_3', family: 'Divers' }),
           ]),
         },
       ],

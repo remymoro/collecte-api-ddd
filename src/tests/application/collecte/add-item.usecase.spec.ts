@@ -8,7 +8,11 @@ describe('AddItemUseCase (Option B snapshot)', () => {
   it('enrichit la saisie avec family/subFamily du catalogue', async () => {
     const entryRepo = new InMemoryCollecteEntryRepository();
     const productRepo = new InMemoryProductRepository([
-      new Product('01751144', 'Protéines', 'Sans porc'),
+      Product.create({
+        reference: '01751144',
+        family: 'Protéines',
+        subFamily: 'Sans porc',
+      }),
     ]);
 
     const draft = new CollecteEntry();

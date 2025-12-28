@@ -6,7 +6,11 @@ import { ProductNotFoundError } from '../../../domain/product/errors/product-not
 describe('UpdateProductUseCase', () => {
   it('met à jour family / subFamily sans changer la référence', async () => {
     const repo = new InMemoryProductRepository([
-      new Product('PROD_1', 'Ancienne famille', 'Ancienne sous-famille'),
+      Product.create({
+        reference: 'PROD_1',
+        family: 'Ancienne famille',
+        subFamily: 'Ancienne sous-famille',
+      }),
     ]);
 
     const useCase = new UpdateProductUseCase(repo);
@@ -24,7 +28,7 @@ describe('UpdateProductUseCase', () => {
     expect(persisted?.family).toBe('Nouvelle famille');
   });
 
-  it('refuse la mise à jour si le produit n’existe pas', async () => {
+  it('refuse la mise à jour si le produit n\'existe pas', async () => {
     const repo = new InMemoryProductRepository();
     const useCase = new UpdateProductUseCase(repo);
 

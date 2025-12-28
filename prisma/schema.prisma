@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum EntryStatus {
+  EN_COURS
+  VALIDEE
+}
+
+model Product {
+  reference  String  @id
+  family     String
+  subFamily  String?
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+}
+
+model CollecteEntry {
+  id          String      @id @default(uuid())
+
+  // Statut initial cohérent avec le domaine
+  status      EntryStatus @default(EN_COURS)
+
+  // Snapshot métier dérivé (lecture / performance)
+  // ⚠️ Jamais utilisé comme source de vérité
+  totalKg     Decimal     @db.Decimal(10, 3) @default(0)
+
+  createdAt   DateTime    @default(now())
+  validatedAt DateTime?
+
+  items       CollecteEntryItem[]
+}
+
+model CollecteEntryItem {
+  id         String   @id @default(uuid())
+
+  entryId    String
+  productRef String
+  family     String
+  subFamily  String?
+  weightKg   Decimal  @db.Decimal(10, 3)
+
+  entry      CollecteEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  @@index([entryId])
+}

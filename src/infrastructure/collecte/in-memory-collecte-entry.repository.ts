@@ -1,5 +1,5 @@
-import { CollecteEntry } from '../../domain/collecte/collecte-entry.entity';
-import { CollecteEntryRepository } from '../../domain/collecte/collecte-entry.repository';
+import { CollecteEntry } from '@domain/collecte/collecte-entry.entity';
+import { CollecteEntryRepository } from '@domain/collecte/collecte-entry.repository';
 
 export class InMemoryCollecteEntryRepository
   implements CollecteEntryRepository
@@ -9,10 +9,10 @@ export class InMemoryCollecteEntryRepository
   async save(entry: CollecteEntry): Promise<void> {
     const snapshot = CollecteEntry.rehydrate({
       id: entry.id,
-      status: entry.entryStatus,
-      createdAt: entry.entryCreatedAt,
+      status: entry.status,
+      createdAt: entry.createdAt,
       validatedAt: entry.validatedAt,
-      items: entry.entryItems.map(item => ({ ...item })), // ✅
+      items: entry.itemsSnapshot.map(item => ({ ...item })), // ✅
     });
 
     this.entries.set(entry.id, snapshot);

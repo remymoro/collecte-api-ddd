@@ -1,7 +1,7 @@
 import { UpdateProductUseCase } from '../../../application/product/update-product.usecase';
 import { InMemoryProductRepository } from '../../../infrastructure/product/in-memory-product.repository';
-import { Product } from '../../../domain/product/product.entity';
-import { ProductNotFoundError } from '../../../domain/product/errors/product-not-found.error';
+import { Product } from '@domain/product/product.entity';
+import { ProductNotFoundError } from '@domain/product/errors/product-not-found.error';
 
 describe('UpdateProductUseCase', () => {
   it('met à jour family / subFamily sans changer la référence', async () => {

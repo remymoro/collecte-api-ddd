@@ -1,8 +1,8 @@
 import { AddItemUseCase } from '../../../application/collecte/add-item.usecase';
 import { InMemoryCollecteEntryRepository } from '../../../infrastructure/collecte/in-memory-collecte-entry.repository';
 import { InMemoryProductRepository } from '../../../infrastructure/product/in-memory-product.repository';
-import { Product } from '../../../domain/product/product.entity';
-import { CollecteEntry } from '../../../domain/collecte/collecte-entry.entity';
+import { Product } from '@domain/product/product.entity';
+import { CollecteEntry } from '@domain/collecte/collecte-entry.entity';
 
 describe('AddItemUseCase (Option B snapshot)', () => {
   it('enrichit la saisie avec family/subFamily du catalogue', async () => {

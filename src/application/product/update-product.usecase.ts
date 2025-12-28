@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { ProductRepository } from '../../domain/product/product.repository';
-import { Product } from '../../domain/product/product.entity';
-import { ProductNotFoundError } from '../../domain/product/errors/product-not-found.error';
-import { ProductArchivedError } from '../../domain/product/errors/product-archived.error';
+import type { ProductRepository } from '@domain/product/product.repository';
+import { Product } from '@domain/product/product.entity';
+import { ProductNotFoundError } from '@domain/product/errors/product-not-found.error';
+import { ProductArchivedError } from '@domain/product/errors/product-archived.error';
 
 export type UpdateProductInput = {
   family: string;

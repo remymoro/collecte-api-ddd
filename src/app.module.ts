@@ -1,9 +1,19 @@
 import { Module } from '@nestjs/common';
-import { CollecteModule } from './modules/collecte/collecte.module';
-import { PrismaModule } from './infrastructure/persistence/prisma/prisma.module';
-import { ProductModule } from './modules/product/product.module';
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from '@modules/auth/auth.module';
+import { PrismaModule } from '@infrastructure/persistence/prisma/prisma.module';
+import { CollecteModule } from '@modules/collecte/collecte.module';
+import { ProductModule } from '@modules/product/product.module';
 
 @Module({
-  imports: [CollecteModule, PrismaModule, ProductModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    PrismaModule,
+    AuthModule,
+    CollecteModule,
+    ProductModule,
+  ],
 })
 export class AppModule {}

@@ -1,7 +1,7 @@
 import { ListEntriesUseCase } from '../../../application/collecte/list-entries.usecase';
 import { InMemoryCollecteEntryRepository } from '../../../infrastructure/collecte/in-memory-collecte-entry.repository';
-import { CollecteEntry } from '../../../domain/collecte/collecte-entry.entity';
-import { EntryStatus } from '../../../domain/collecte/enums/entry-status.enum';
+import { CollecteEntry } from '@domain/collecte/collecte-entry.entity';
+import { EntryStatus } from '@domain/collecte/enums/entry-status.enum';
 
 describe('ListEntriesUseCase', () => {
   let repository: InMemoryCollecteEntryRepository;

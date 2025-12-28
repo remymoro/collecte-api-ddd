@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import type { CollecteEntryRepository } from '../../domain/collecte/collecte-entry.repository';
-import { CollecteEntry } from '../../domain/collecte/collecte-entry.entity';
-import { DomainError } from '../../domain/errors/domain-error';
-import { PersistenceError } from '../../domain/errors/persistence.error';
+import type { CollecteEntryRepository } from '@domain/collecte/collecte-entry.repository';
+import { CollecteEntry } from '@domain/collecte/collecte-entry.entity';
+import { DomainError } from '@domain/errors/domain-error';
+import { PersistenceError } from '@domain/errors/persistence.error';
 import { PrismaService } from '../persistence/prisma/prisma.service';
 import { CollecteEntryMapper } from './collecte-entry.mapper';
-import { EntryNotFoundError } from '../../domain/collecte/errors/entry-not-found.error';
+import { EntryNotFoundError } from '@domain/collecte/errors/entry-not-found.error';
 
 
 @Injectable()

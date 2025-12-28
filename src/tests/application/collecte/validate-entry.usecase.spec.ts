@@ -1,9 +1,9 @@
 import { ValidateEntryUseCase } from '../../../application/collecte/validate-entry.usecase';
 import { InMemoryCollecteEntryRepository } from '../../../infrastructure/collecte/in-memory-collecte-entry.repository';
-import { CollecteEntry } from '../../../domain/collecte/collecte-entry.entity';
-import { EntryStatus } from '../../../domain/collecte/enums/entry-status.enum';
-import { EmptyEntryError } from '../../../domain/collecte/errors/empty-entry.error';
-import { EntryAlreadyValidatedError } from '../../../domain/collecte/errors/entry-already-validated.error';
+import { CollecteEntry } from '@domain/collecte/collecte-entry.entity';
+import { EntryStatus } from '@domain/collecte/enums/entry-status.enum';
+import { EmptyEntryError } from '@domain/collecte/errors/empty-entry.error';
+import { EntryAlreadyValidatedError } from '@domain/collecte/errors/entry-already-validated.error';
 
 describe('ValidateEntryUseCase', () => {
   let repository: InMemoryCollecteEntryRepository;

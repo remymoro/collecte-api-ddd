@@ -1,5 +1,5 @@
-import { Product } from '../../domain/product/product.entity';
-import type { ProductRepository } from '../../domain/product/product.repository';
+import { Product } from '@domain/product/product.entity';
+import type { ProductRepository } from '@domain/product/product.repository';
 
 export class InMemoryProductRepository implements ProductRepository {
   private readonly products = new Map<string, Product>();

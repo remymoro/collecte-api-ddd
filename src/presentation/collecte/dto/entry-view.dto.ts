@@ -1,7 +1,7 @@
-import { EntryStatus } from '../../../domain/collecte/enums/entry-status.enum';
+import { EntryStatusDto } from './entry-status.type';
 
 export class EntryViewDto {
   totalWeightKg: number;
-  status: EntryStatus;
+  status: EntryStatusDto;
   createdAt: Date;
 }

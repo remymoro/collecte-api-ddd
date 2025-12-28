@@ -1,7 +1,7 @@
 import { RemoveItemUseCase } from '../../../application/collecte/remove-item.usecase';
 import { InMemoryCollecteEntryRepository } from '../../../infrastructure/collecte/in-memory-collecte-entry.repository';
-import { CollecteEntry } from '../../../domain/collecte/collecte-entry.entity';
-import { EntryAlreadyValidatedError } from '../../../domain/collecte/errors/entry-already-validated.error';
+import { CollecteEntry } from '@domain/collecte/collecte-entry.entity';
+import { EntryAlreadyValidatedError } from '@domain/collecte/errors/entry-already-validated.error';
 
 describe('RemoveItemUseCase', () => {
   let repository: InMemoryCollecteEntryRepository;

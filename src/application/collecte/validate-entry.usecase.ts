@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { CollecteEntryRepository } from '../../domain/collecte/collecte-entry.repository';
+import type { CollecteEntryRepository } from '@domain/collecte/collecte-entry.repository';
 
 @Injectable()
 export class ValidateEntryUseCase {

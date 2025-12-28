@@ -1,7 +1,7 @@
 import { ArchiveProductUseCase } from '../../../application/product/archive-product.usecase';
 import { InMemoryProductRepository } from '../../../infrastructure/product/in-memory-product.repository';
-import { Product } from '../../../domain/product/product.entity';
-import { ProductNotFoundError } from '../../../domain/product/errors/product-not-found.error';
+import { Product } from '@domain/product/product.entity';
+import { ProductNotFoundError } from '@domain/product/errors/product-not-found.error';
 
 describe('ArchiveProductUseCase', () => {
   it('archive un produit existant', async () => {

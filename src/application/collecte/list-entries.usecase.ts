@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { EntryStatus } from '../../domain/collecte/enums/entry-status.enum';
-import type { CollecteEntryRepository } from '../../domain/collecte/collecte-entry.repository';
+import { EntryStatus } from '@domain/collecte/enums/entry-status.enum';
+import type { CollecteEntryRepository } from '@domain/collecte/collecte-entry.repository';
 
 export type EntryView = {
   totalWeightKg: number;
@@ -20,8 +20,8 @@ export class ListEntriesUseCase {
 
     return entries.map((entry) => ({
       totalWeightKg: entry.totalWeightKg,
-      status: entry.entryStatus,
-      createdAt: entry.entryCreatedAt,
+      status: entry.status,
+      createdAt: entry.createdAt,
     }));
   }
 }

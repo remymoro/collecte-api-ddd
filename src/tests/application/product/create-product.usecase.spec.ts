@@ -1,6 +1,6 @@
 import { CreateProductUseCase } from '../../../application/product/create-product.usecase';
-import { Product } from '../../../domain/product/product.entity';
-import { ProductAlreadyExistsError } from '../../../domain/product/errors/product-already-exists.error';
+import { Product } from '@domain/product/product.entity';
+import { ProductAlreadyExistsError } from '@domain/product/errors/product-already-exists.error';
 import { InMemoryProductRepository } from '../../../infrastructure/product/in-memory-product.repository';
 
 describe('CreateProductUseCase', () => {

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Product } from '../../domain/product/product.entity';
-import type { ProductRepository } from '../../domain/product/product.repository';
-import { ProductAlreadyExistsError } from '../../domain/product/errors/product-already-exists.error';
+import { Product } from "@domain/product/product.entity";
+import type { ProductRepository } from "@domain/product/product.repository";
+import { ProductAlreadyExistsError } from "@domain/product/errors/product-already-exists.error";
 
 export type CreateProductInput = {
   reference: string;

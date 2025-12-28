@@ -20,48 +20,60 @@ export type CollecteEntryItemSnapshot = {
 
 export class CollecteEntry {
   private readonly _id: string;
-  private status: EntryStatus = EntryStatus.EN_COURS;
+  private _status: EntryStatus = EntryStatus.EN_COURS;
   private readonly items: EntryItem[] = [];
-  private readonly createdAt: Date;
+  private readonly _createdAt: Date;
   private _validatedAt?: Date;
 
   constructor(id: string = randomUUID(), createdAt: Date = new Date()) {
     this._id = id;
-    this.createdAt = createdAt;
+    this._createdAt = createdAt;
   }
 
-  get entryId(): string {
-    return this._id;
-  }
-
-  get entryValidatedAt(): Date | undefined {
-    return this._validatedAt;
-  }
-
-  // Backward/interop getters used by infrastructure
   get id(): string {
     return this._id;
+  }
+
+  get status(): EntryStatus {
+    return this._status;
+  }
+
+  get createdAt(): Date {
+    return this._createdAt;
   }
 
   get validatedAt(): Date | undefined {
     return this._validatedAt;
   }
 
-  get entryStatus(): EntryStatus {
-    return this.status;
-  }
-
-  get entryCreatedAt(): Date {
-    return this.createdAt;
-  }
-
-  get entryItems(): ReadonlyArray<CollecteEntryItemSnapshot> {
+  get itemsSnapshot(): ReadonlyArray<CollecteEntryItemSnapshot> {
     return this.items.map((item) => ({
       productRef: item.productRef,
       family: item.family,
       subFamily: item.subFamily,
       weightKg: item.weight.valueKg,
     }));
+  }
+
+  // Backward compatibility getters
+  get entryId(): string {
+    return this._id;
+  }
+
+  get entryStatus(): EntryStatus {
+    return this._status;
+  }
+
+  get entryCreatedAt(): Date {
+    return this._createdAt;
+  }
+
+  get entryValidatedAt(): Date | undefined {
+    return this._validatedAt;
+  }
+
+  get entryItems(): ReadonlyArray<CollecteEntryItemSnapshot> {
+    return this.itemsSnapshot;
   }
 
   static rehydrate(props: {
@@ -75,16 +87,16 @@ export class CollecteEntry {
 
     if (props.items) {
       for (const item of props.items) {
-        entry.addItem({
+        entry.pushItemRaw({
           productRef: item.productRef,
           family: item.family,
           subFamily: item.subFamily,
-          weightKg: item.weightKg,
+          weight: Weight.from(item.weightKg),
         });
       }
     }
 
-    entry.status = props.status;
+    entry._status = props.status;
     entry._validatedAt = props.validatedAt;
 
     return entry;
@@ -100,7 +112,7 @@ export class CollecteEntry {
 
     const weight = Weight.from(input.weightKg);
 
-    this.items.push({
+    this.pushItemRaw({
       productRef: input.productRef,
       family: input.family,
       subFamily: input.subFamily,
@@ -120,7 +132,7 @@ export class CollecteEntry {
       throw new EmptyEntryError();
     }
 
-    this.status = EntryStatus.VALIDEE;
+    this._status = EntryStatus.VALIDEE;
     this._validatedAt = new Date();
   }
 
@@ -129,8 +141,12 @@ export class CollecteEntry {
   }
 
   private ensureEditable(): void {
-    if (this.status === EntryStatus.VALIDEE) {
+    if (this._status === EntryStatus.VALIDEE) {
       throw new EntryAlreadyValidatedError();
     }
+  }
+
+  private pushItemRaw(item: EntryItem): void {
+    this.items.push(item);
   }
 }

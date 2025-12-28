@@ -1,5 +1,5 @@
-import { ProductArchivedError } from '../../../domain/product/errors/product-archived.error';
-import { Product } from '../../../domain/product/product.entity';
+import { ProductArchivedError } from '@domain/product/errors/product-archived.error';
+import { Product } from '@domain/product/product.entity';
 
 describe('Product (Domain)', () => {
   describe('Création', () => {

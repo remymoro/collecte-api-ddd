@@ -1,6 +1,10 @@
+import { IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { EntryItemDto } from './entry-item.dto';
+
 export class CreateEntryDto {
-  items: {
-    productRef: string;
-    weightKg: number;
-  }[];
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => EntryItemDto)
+  items: EntryItemDto[];
 }

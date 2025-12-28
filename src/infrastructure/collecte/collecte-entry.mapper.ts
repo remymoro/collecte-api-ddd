@@ -1,8 +1,8 @@
-import type { EntryStatus } from '../../domain/collecte/enums/entry-status.enum';
+import type { EntryStatus } from '@domain/collecte/enums/entry-status.enum';
 import {
   CollecteEntry,
   type CollecteEntryItemSnapshot,
-} from '../../domain/collecte/collecte-entry.entity';
+} from '@domain/collecte/collecte-entry.entity';
 
 /**
  * Mapper between Domain CollecteEntry and Prisma models
@@ -16,13 +16,13 @@ export class CollecteEntryMapper {
   static toPrisma(entry: CollecteEntry) {
     return {
       id: entry.id,
-      status: entry.entryStatus,
+      status: entry.status,
       totalKg: entry.totalWeightKg,
-      createdAt: entry.entryCreatedAt,
+      createdAt: entry.createdAt,
       validatedAt: entry.validatedAt ?? null,
 
       items: {
-        create: entry.entryItems.map((item) => ({
+        create: entry.itemsSnapshot.map((item) => ({
           productRef: item.productRef,
           family: item.family,
           subFamily: item.subFamily,

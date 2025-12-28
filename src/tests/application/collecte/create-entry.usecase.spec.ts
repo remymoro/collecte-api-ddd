@@ -1,7 +1,7 @@
 import { CreateEntryUseCase } from '../../../application/collecte/create-entry.usecase';
 import { InMemoryCollecteEntryRepository } from '../../../infrastructure/collecte/in-memory-collecte-entry.repository';
 import { InMemoryProductRepository } from '../../../infrastructure/product/in-memory-product.repository';
-import { Product } from '../../../domain/product/product.entity';
+import { Product } from '@domain/product/product.entity';
 
 describe('CreateEntryUseCase', () => {
   it('crée et sauvegarde une saisie EN_COURS', async () => {

@@ -13,7 +13,7 @@ import { UpdateProductUseCase } from '../../application/product/update-product.u
 import { ArchiveProductUseCase } from '../../application/product/archive-product.usecase';
 import { ListProductsUseCase } from '../../application/product/list-products.usecase';
 import { CreateProductDto } from './dto/create-product.dto';
-import { Product } from '../../domain/product/product.entity';
+import { ProductResponseDto } from './dto/product-response.dto';
 
 @Controller('admin/products')
 @UseGuards(FakeAuthGuard)
@@ -26,7 +26,7 @@ export class ProductController {
   ) {}
 
   @Post()
-  async create(@Body() dto: CreateProductDto) {
+  async create(@Body() dto: CreateProductDto): Promise<ProductResponseDto> {
     const product = await this.createProduct.execute(dto);
 
     return this.toResponse(product);
@@ -36,33 +36,27 @@ export class ProductController {
   async update(
     @Param('reference') reference: string,
     @Body() dto: { family: string; subFamily?: string },
-  ) {
+  ): Promise<ProductResponseDto> {
     const product = await this.updateProduct.execute(reference, dto);
 
     return this.toResponse(product);
   }
 
   @Patch(':reference/archive')
-  async archive(@Param('reference') reference: string) {
+  async archive(@Param('reference') reference: string): Promise<ProductResponseDto> {
     const product = await this.archiveProduct.execute(reference);
 
     return this.toResponse(product);
   }
 
   @Get()
-async listAll() {
-  const products = await this.listProductsUseCase.execute();
+  async listAll(): Promise<ProductResponseDto[]> {
+    const products = await this.listProductsUseCase.execute();
 
-  return products.map((p) => ({
-    reference: p.reference,
-    family: p.family,
-    subFamily: p.subFamily,
-    isActive: p.isActive,
-  }));
-}
+    return products.map((p) => this.toResponse(p));
+  }
 
-
-  private toResponse(product: Product) {
+  private toResponse(product: { reference: string; family: string; subFamily?: string; isActive: boolean }): ProductResponseDto {
     return {
       reference: product.reference,
       family: product.family,

@@ -1,0 +1,1 @@
+export type EntryStatusDto = 'EN_COURS' | 'VALIDEE';

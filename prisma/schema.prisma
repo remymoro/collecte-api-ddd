@@ -11,45 +11,110 @@ datasource db {
   provider = "postgresql"
 }
 
+// =========================
+// ENUMS
+// =========================
+
 enum EntryStatus {
   EN_COURS
   VALIDEE
 }
 
-model Product {
-  reference  String  @id
-  family     String
-  subFamily  String?
-  isActive   Boolean  @default(true)
-  createdAt  DateTime @default(now())
+enum UserRole {
+  ADMIN
+  BENEVOLE
 }
 
+enum UserCenterRole {
+  ADMIN
+  RESPONSABLE
+  BENEVOLE
+}
+
+// =========================
+// PRODUITS
+// =========================
+
+model Product {
+  reference String   @id
+  family    String
+  subFamily String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+// =========================
+// COLLECTE
+// =========================
+
 model CollecteEntry {
-  id          String      @id @default(uuid())
+  id     String      @id @default(uuid())
+  status EntryStatus @default(EN_COURS)
 
-  // Statut initial cohérent avec le domaine
-  status      EntryStatus @default(EN_COURS)
+  totalKg Decimal @default(0) @db.Decimal(10, 3)
 
-  // Snapshot métier dérivé (lecture / performance)
-  // ⚠️ Jamais utilisé comme source de vérité
-  totalKg     Decimal     @db.Decimal(10, 3) @default(0)
-
-  createdAt   DateTime    @default(now())
+  createdAt   DateTime  @default(now())
   validatedAt DateTime?
 
-  items       CollecteEntryItem[]
+  items CollecteEntryItem[]
 }
 
 model CollecteEntryItem {
-  id         String   @id @default(uuid())
+  id String @id @default(uuid())
 
   entryId    String
   productRef String
   family     String
   subFamily  String?
-  weightKg   Decimal  @db.Decimal(10, 3)
+  weightKg   Decimal @db.Decimal(10, 3)
 
-  entry      CollecteEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  entry CollecteEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
 
   @@index([entryId])
+}
+
+// =========================
+// AUTH / ORGANISATION
+// =========================
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  passwordHash String
+  role         UserRole
+
+  activeCenterId String?
+  activeCenter   Center? @relation("ActiveCenter", fields: [activeCenterId], references: [id])
+
+  centers UserCenter[]
+
+  createdAt DateTime @default(now())
+}
+
+model Center {
+  id         String @id @default(uuid())
+  name       String
+  address    String
+  city       String
+  postalCode String
+
+  isActive Boolean @default(true)
+
+  users       UserCenter[]
+  activeUsers User[]       @relation("ActiveCenter")
+
+  createdAt DateTime @default(now())
+}
+
+model UserCenter {
+  userId   String
+  centerId String
+
+  role     UserCenterRole
+  isActive Boolean        @default(true)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  center Center @relation(fields: [centerId], references: [id], onDelete: Cascade)
+
+  @@id([userId, centerId])
 }

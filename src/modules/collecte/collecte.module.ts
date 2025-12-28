@@ -7,11 +7,10 @@ import { GetEntryUseCase } from '../../application/collecte/get-entry.usecase';
 import { AddItemUseCase } from '../../application/collecte/add-item.usecase';
 import { RemoveItemUseCase } from '../../application/collecte/remove-item.usecase';
 import { PrismaCollecteEntryRepository } from '../../infrastructure/collecte/prisma-collecte-entry.repository';
-import { PrismaModule } from '../../infrastructure/persistence/prisma/prisma.module';
 import { PrismaProductRepository } from '../../infrastructure/product/prisma-product.repository';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [],
   controllers: [CollecteController],
   providers: [
     CreateEntryUseCase,

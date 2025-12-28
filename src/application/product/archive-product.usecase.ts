@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { ProductRepository } from '../../domain/product/product.repository';
-import { ProductNotFoundError } from '../../domain/product/errors/product-not-found.error';
-import { Product } from '../../domain/product/product.entity';
+import type { ProductRepository } from '@domain/product/product.repository';
+import { ProductNotFoundError } from '@domain/product/errors/product-not-found.error';
+import { Product } from '@domain/product/product.entity';
 
 @Injectable()
 export class ArchiveProductUseCase {

@@ -1,5 +1,5 @@
-import { Weight } from '../../../domain/collecte/value-objects/weight.vo';
-import { InvalidWeightError } from '../../../domain/collecte/errors/invalid-weight.error';
+import { Weight } from '@domain/collecte/value-objects/weight.vo';
+import { InvalidWeightError } from '@domain/collecte/errors/invalid-weight.error';
 
 describe('Weight (Value Object)', () => {
   describe('Création valide', () => {

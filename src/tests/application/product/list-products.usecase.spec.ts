@@ -1,6 +1,6 @@
 import { ListProductsUseCase } from '../../../application/product/list-products.usecase';
 import { InMemoryProductRepository } from '../../../infrastructure/product/in-memory-product.repository';
-import { Product } from '../../../domain/product/product.entity';
+import { Product } from '@domain/product/product.entity';
 
 describe('ListProductsUseCase', () => {
   it('retourne tous les produits du catalogue', async () => {

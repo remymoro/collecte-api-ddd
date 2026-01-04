@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "CollecteEntry" ALTER COLUMN "totalKg" SET DEFAULT 0,
-ALTER COLUMN "status" SET DEFAULT 'EN_COURS';

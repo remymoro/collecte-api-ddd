@@ -4,7 +4,13 @@ import { PasswordHasher } from '@application/auth/password-hasher';
 
 @Injectable()
 export class BcryptPasswordHasher implements PasswordHasher {
-  async compare(plain: string, hash: string): Promise<boolean> {
-    return bcrypt.compare(plain, hash);
+
+  async hash(password: string): Promise<string> {
+    return bcrypt.hash(password, 10);
+  }
+
+  async compare(password: string, hash: string): Promise<boolean> {
+    return bcrypt.compare(password, hash);
   }
 }
+

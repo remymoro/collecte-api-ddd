@@ -5,6 +5,7 @@ import { USER_REPOSITORY } from '@domain/user/user.tokens';
 import { UserAlreadyExistsError } from '@domain/user/errors/user-already-exists.error';
 import { PASSWORD_HASHER } from '@application/auth/auth.tokens';
 import { PasswordHasher } from '@application/auth/password-hasher';
+import { CenterId } from '@domain/center/value-objects/center-id.vo';
 
 export type CreateBenevoleInput = {
   username: string;
@@ -36,7 +37,7 @@ export class CreateUserForCenterUsecase {
     const user = User.createForCenter({
       username: input.username,
       passwordHash,
-      centerId: input.centerId,
+      centerId: CenterId.from(input.centerId),
     });
 
     await this.users.save(user);

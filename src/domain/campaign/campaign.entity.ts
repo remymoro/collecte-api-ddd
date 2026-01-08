@@ -6,10 +6,11 @@ import { InvalidStatusTransitionError } from './errors/invalid-status-transition
 import { CampaignCannotBeModifiedError } from './errors/campaign-cannot-be-modified.error';
 import { CannotCloseCampaignError } from './errors/cannot-close-campaign.error';
 import { CannotCancelClosedCampaignError } from './errors/cannot-cancel-closed-campaign.error';
+import { CampaignId } from './value-objects/campaign-id.vo';
 
 export class Campaign {
   constructor(
-    private readonly _id: string,
+    private readonly _id: CampaignId,
     private _name: string,
     private readonly _year: number,
     private _startDate: Date,
@@ -45,7 +46,7 @@ export class Campaign {
     gracePeriodEndDate.setDate(gracePeriodEndDate.getDate() + gracePeriodDays);
 
     return new Campaign(
-      crypto.randomUUID(),
+      CampaignId.generate(),
       name,
       year,
       startDate,
@@ -67,7 +68,7 @@ export class Campaign {
   // ============================
 
   static rehydrate(props: {
-    id: string;
+    id: CampaignId;
     name: string;
     year: number;
     startDate: Date;
@@ -150,7 +151,7 @@ export class Campaign {
   ): void {
     if (this._status !== CampaignStatus.PLANIFIEE) {
       throw new CampaignCannotBeModifiedError(
-        this._id,
+        this._id.toString(),
         'Only planned campaigns can be modified',
       );
     }
@@ -209,7 +210,7 @@ export class Campaign {
 
   cancel(): void {
     if (this._status === CampaignStatus.CLOTUREE) {
-      throw new CannotCancelClosedCampaignError(this._id);
+      throw new CannotCancelClosedCampaignError(this._id.toString());
     }
 
     if (this._status === CampaignStatus.ANNULEE) {
@@ -257,7 +258,7 @@ export class Campaign {
   // GETTERS
   // ============================
 
-  get id(): string {
+  get id(): CampaignId {
     return this._id;
   }
 

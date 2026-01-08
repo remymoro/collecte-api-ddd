@@ -6,47 +6,65 @@ import { FakePasswordHasher } from './fake-password-hasher';
 import { InMemoryUserRepository } from './in-memory-user.repository';
 
 describe('AuthenticateUserUsecase', () => {
-  const hasher = new FakePasswordHasher();
+	const hasher = new FakePasswordHasher();
 
-  it('throws if user does not exist', async () => {
-    const repo = new InMemoryUserRepository([]);
-    const usecase = new AuthenticateUserUsecase(repo, hasher);
+	it("échoue si l'utilisateur n'existe pas", async () => {
+		const repo = new InMemoryUserRepository([]);
+		const usecase = new AuthenticateUserUsecase(repo, hasher);
 
-    await expect(
-      usecase.execute({ username: 'john', password: '123' })
-    ).rejects.toBeInstanceOf(InvalidCredentialsError);
-  });
+		await expect(
+			usecase.execute({ username: 'john', password: '123' }),
+		).rejects.toBeInstanceOf(InvalidCredentialsError);
+	});
 
-  it('throws if password is invalid', async () => {
-    const user = new User('1', 'john', 'hash', 'BENEVOLE', 'center-1');
-    const repo = new InMemoryUserRepository([user]);
-    const usecase = new AuthenticateUserUsecase(repo, hasher);
+	it('échoue si le mot de passe est invalide', async () => {
+		const user = User.hydrate({
+			id: '1',
+			username: 'john',
+			passwordHash: 'hash',
+			role: 'BENEVOLE',
+			centerId: 'center-1',
+		});
+		const repo = new InMemoryUserRepository([user]);
+		const usecase = new AuthenticateUserUsecase(repo, hasher);
 
-    await expect(
-      usecase.execute({ username: 'john', password: 'wrong' })
-    ).rejects.toBeInstanceOf(InvalidCredentialsError);
-  });
+		await expect(
+			usecase.execute({ username: 'john', password: 'wrong' }),
+		).rejects.toBeInstanceOf(InvalidCredentialsError);
+	});
 
-  it('throws if user has no active center', async () => {
-    const user = new User('1', 'john', 'hash', 'BENEVOLE', null);
-    const repo = new InMemoryUserRepository([user]);
-    const usecase = new AuthenticateUserUsecase(repo, hasher);
+	it('échoue si utilisateur non admin sans centre actif', async () => {
+		const user = User.hydrate({
+			id: '1',
+			username: 'john',
+			passwordHash: 'hash',
+			role: 'BENEVOLE',
+			centerId: null,
+		});
+		const repo = new InMemoryUserRepository([user]);
+		const usecase = new AuthenticateUserUsecase(repo, hasher);
 
-    await expect(
-      usecase.execute({ username: 'john', password: 'hash' })
-    ).rejects.toBeInstanceOf(NoActiveCenterError);
-  });
+		await expect(
+			usecase.execute({ username: 'john', password: 'hash' }),
+		).rejects.toBeInstanceOf(NoActiveCenterError);
+	});
 
-  it('returns user if authentication succeeds', async () => {
-    const user = new User('1', 'john', 'hash', 'BENEVOLE', 'center-1');
-    const repo = new InMemoryUserRepository([user]);
-    const usecase = new AuthenticateUserUsecase(repo, hasher);
+	it("retourne l'utilisateur si authentification valide", async () => {
+		const user = User.hydrate({
+			id: '1',
+			username: 'john',
+			passwordHash: 'hash',
+			role: 'BENEVOLE',
+			centerId: 'center-1',
+		});
+		const repo = new InMemoryUserRepository([user]);
+		const usecase = new AuthenticateUserUsecase(repo, hasher);
 
-    const result = await usecase.execute({
-      username: 'john',
-      password: 'hash',
-    });
+		const result = await usecase.execute({
+			username: 'john',
+			password: 'hash',
+		});
 
-    expect(result).toBe(user);
-  });
+		expect(result).toBe(user);
+	});
 });

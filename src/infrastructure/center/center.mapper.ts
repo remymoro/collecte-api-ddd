@@ -1,10 +1,11 @@
 import { Center } from '@domain/center/center.entity';
+import { CenterId } from '@domain/center/value-objects/center-id.vo';
 import { Center as PrismaCenter } from '@generated/prisma/client';
 
 export class CenterMapper {
   static toDomain(row: PrismaCenter): Center {
     return Center.rehydrate({
-      id: row.id,
+      id: CenterId.from(row.id),
       name: row.name,
       address: row.address,
       city: row.city,
@@ -15,7 +16,7 @@ export class CenterMapper {
 
   static toPersistence(center: Center) {
     return {
-      id: center.id,
+      id: center.id.toString(),
       name: center.name,
       address: center.address,
       city: center.city,

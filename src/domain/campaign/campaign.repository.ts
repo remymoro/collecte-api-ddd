@@ -2,6 +2,7 @@
 
 import type { Campaign } from './campaign.entity';
 import type { CampaignStatus } from './enums/campaign-status.enum';
+import { CampaignId } from './value-objects/campaign-id.vo';
 
 export interface CampaignFilters {
   year?: number;
@@ -12,7 +13,7 @@ export interface CampaignFilters {
 export abstract class CampaignRepository {
   abstract create(campaign: Campaign): Promise<void>;
   abstract update(campaign: Campaign): Promise<void>;
-  abstract findById(id: string): Promise<Campaign | null>;
+  abstract findById(id: CampaignId): Promise<Campaign | null>;
   abstract findAll(filters?: CampaignFilters): Promise<Campaign[]>;
 
   /**

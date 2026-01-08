@@ -2,12 +2,14 @@
 
 import type { Store } from './store.entity';
 import type { StoreStatus } from './enums/store-status.enum';
+import { StoreId } from './value-objects/store-id.vo';
+import { CenterId } from '@domain/center/value-objects/center-id.vo';
 
 /**
  * Filtres pour la recherche de Stores
  */
 export interface StoreFilters {
-  centerId?: string;
+  centerId?: CenterId;
   city?: string;
   status?: StoreStatus;
   statusIn?: StoreStatus[];
@@ -28,7 +30,7 @@ export abstract class StoreRepository {
    * Trouve un Store par ID
    * @throws StoreNotFoundError si non trouvé
    */
-  abstract findById(id: string): Promise<Store>;
+  abstract findById(id: StoreId): Promise<Store>;
 
   /**
    * Récupère tous les Stores avec filtres optionnels
@@ -42,7 +44,7 @@ export abstract class StoreRepository {
    * (pas le nom, car on peut avoir plusieurs Lidl dans un même centre)
    */
   abstract findByCenterIdAndAddress(
-    centerId: string,
+    centerId: CenterId,
     address: string,
     city: string,
     postalCode: string,
@@ -53,7 +55,7 @@ export abstract class StoreRepository {
 
   abstract findAvailableForCampaignAndCenter(
     campaignId: string,
-    centerId: string,
+    centerId: CenterId,
   ): Promise<Store[]>;
 }
 

@@ -7,7 +7,6 @@ import {
   Param,
   Post,
   Put,
-  UseFilters,
   UseGuards,
 } from '@nestjs/common';
 
@@ -29,7 +28,6 @@ import { UpdateCampaignDto } from './dto/update-campaign.dto';
 import { CampaignResponseDto } from './dto/campaign-response.dto';
 
 
-import { CampaignExceptionFilter } from './filters/campaign-exception.filter';
 import { CurrentUser } from '@presentation/auth/decorators/current-user.decorator';
 import { AuthenticatedUser } from '@application/auth/authenticated-user.output';
 import { JwtAuthGuard } from '@infrastructure/auth/guards/jwt-auth.guard';
@@ -38,7 +36,6 @@ import { JwtAuthGuard } from '@infrastructure/auth/guards/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller('campaigns')
-@UseFilters(CampaignExceptionFilter)
 export class CampaignController {
   constructor(
     private readonly createCampaign: CreateCampaignUseCase,
@@ -60,7 +57,7 @@ async create(
 
   const campaign = await this.createCampaign.execute({
     ...dto,
-    createdBy: user.sub, // ✅ calculé côté serveur
+    createdBy: user.userId, // ✅ calculé côté serveur
   });
 
   return CampaignController.toResponseDto(campaign);
@@ -139,7 +136,7 @@ async create(
     campaign: any,
   ): CampaignResponseDto {
     return {
-      id: campaign.id,
+      id: campaign.id.toString(),
       name: campaign.name,
       year: campaign.year,
       startDate: campaign.startDate,

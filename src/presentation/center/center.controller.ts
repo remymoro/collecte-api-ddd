@@ -42,7 +42,7 @@ export class CenterController {
     const center = await this.createCenter.execute(dto);
 
     return {
-      id: center.id,
+      id: center.id.toString(),
       name: center.name,
       address: center.address,
       city: center.city,
@@ -58,7 +58,7 @@ export class CenterController {
     const centers = await this.listCenters.execute();
 
     return centers.map((center) => ({
-      id: center.id,
+      id: center.id.toString(),
       name: center.name,
       address: center.address,
       city: center.city,
@@ -74,7 +74,7 @@ export class CenterController {
     const center = await this.getCenter.execute(id);
 
     return {
-      id: center.id,
+      id: center.id.toString(),
       name: center.name,
       address: center.address,
       city: center.city,
@@ -93,7 +93,7 @@ export class CenterController {
     });
 
     return {
-      id: center.id,
+      id: center.id.toString(),
       name: center.name,
       address: center.address,
       city: center.city,
@@ -109,7 +109,7 @@ export class CenterController {
     const center = await this.deactivateCenter.execute(id);
 
     return {
-      id: center.id,
+      id: center.id.toString(),
       name: center.name,
       address: center.address,
       city: center.city,
@@ -125,7 +125,7 @@ export class CenterController {
     const center = await this.reactivateCenter.execute(id);
 
     return {
-      id: center.id,
+      id: center.id.toString(),
       name: center.name,
       address: center.address,
       city: center.city,

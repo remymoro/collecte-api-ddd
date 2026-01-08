@@ -1,6 +1,7 @@
 // src/domain/center/center.repository.ts
 
 import { Center } from './center.entity';
+import { CenterId } from './value-objects/center-id.vo';
 
 /**
  * Interface du repository Center (Domain)
@@ -15,7 +16,7 @@ export interface CenterRepository {
   /**
    * Trouve un centre par ID
    */
-  findById(id: string): Promise<Center | null>;
+  findById(id: CenterId): Promise<Center | null>;
 
   /**
    * Récupère tous les centres
@@ -30,5 +31,5 @@ export interface CenterRepository {
   /**
    * Supprime un centre par ID
    */
-  delete(id: string): Promise<void>;
+  delete(id: CenterId): Promise<void>;
 }

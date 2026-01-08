@@ -1,9 +1,9 @@
-import crypto from 'crypto';
 
 import { StoreStatus } from './enums/store-status.enum';
 import { CannotModifyClosedStoreError } from './errors/cannot-modify-closed-store.error';
 import { StoreAlreadyClosedError } from './errors/store-already-closed.error';
 import { StoreImage } from './value-objects/store-image.vo';
+import { StoreId } from './value-objects/store-id.vo';
 import { StoreImageNotFoundError } from './errors/store-image-not-found.error';
 
 export class Store {
@@ -12,7 +12,7 @@ export class Store {
   // ============================
 
   private constructor(
-    private readonly _id: string,
+    private readonly _id: StoreId,
     private readonly _centerId: string,
     private _name: string,
     private _address: string,
@@ -43,7 +43,7 @@ export class Store {
     contactName?: string,
   ): Store {
     return new Store(
-      crypto.randomUUID(),
+      StoreId.generate(),
       centerId,
       name,
       address,
@@ -66,7 +66,7 @@ export class Store {
   // ============================
 
   static rehydrate(props: {
-    id: string;
+    id: StoreId;
     centerId: string;
     name: string;
     address: string;
@@ -114,7 +114,7 @@ export class Store {
     contactName?: string,
   ): void {
     if (this.isClosed()) {
-      throw new CannotModifyClosedStoreError(this._id);
+      throw new CannotModifyClosedStoreError(this._id.toString());
     }
 
     this._name = name;
@@ -132,7 +132,7 @@ export class Store {
 
   markAsUnavailable(userId: string, reason: string): void {
     if (this.isClosed()) {
-      throw new StoreAlreadyClosedError(this._id);
+      throw new StoreAlreadyClosedError(this._id.toString());
     }
 
     this._status = StoreStatus.INDISPONIBLE;
@@ -144,7 +144,7 @@ export class Store {
 
   markAsAvailable(userId: string): void {
     if (this.isClosed()) {
-      throw new StoreAlreadyClosedError(this._id);
+      throw new StoreAlreadyClosedError(this._id.toString());
     }
 
     this._status = StoreStatus.DISPONIBLE;
@@ -156,7 +156,7 @@ export class Store {
 
   close(userId: string, reason: string): void {
     if (this.isClosed()) {
-      throw new StoreAlreadyClosedError(this._id);
+      throw new StoreAlreadyClosedError(this._id.toString());
     }
 
     this._status = StoreStatus.FERME;
@@ -185,7 +185,7 @@ export class Store {
     const exists = this._images.some((img) => img.url === url);
 
     if (!exists) {
-      throw new StoreImageNotFoundError(this._id, url);
+      throw new StoreImageNotFoundError(this._id.toString(), url);
     }
 
     this._images = this._images.filter((img) => img.url !== url);
@@ -196,7 +196,7 @@ export class Store {
     const exists = this._images.some((img) => img.url === url);
 
     if (!exists) {
-      throw new StoreImageNotFoundError(this._id, url);
+      throw new StoreImageNotFoundError(this._id.toString(), url);
     }
 
     this._images = this._images.map((img) =>
@@ -222,7 +222,7 @@ export class Store {
   // GETTERS
   // ============================
 
-  get id(): string {
+  get id(): StoreId {
     return this._id;
   }
 

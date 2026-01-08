@@ -37,7 +37,7 @@ export class BenevoleController {
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<CheckCampaignAcceptingEntriesForBenevoleOutput> {
     return this.checkCampaignAcceptingEntriesForBenevoleUseCase.execute({
-      userId: user.sub,
+      userId: user.userId,
     });
   }
 
@@ -50,7 +50,7 @@ export class BenevoleController {
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<GetAvailableStoresForBenevoleOutput> {
     return this.getAvailableStoresForBenevoleUseCase.execute({
-      userId: user.sub,
+      userId: user.userId,
     });
   }
 }

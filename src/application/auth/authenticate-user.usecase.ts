@@ -22,7 +22,6 @@ export class AuthenticateUserUsecase {
 
   async execute(input: AuthenticateUserInput): Promise<User> {
     const user = await this.userRepository.findByUsername(input.username);
-
     if (!user) {
       throw new InvalidCredentialsError();
     }
@@ -36,7 +35,9 @@ export class AuthenticateUserUsecase {
       throw new InvalidCredentialsError();
     }
 
-    user.ensureCanLogin();
+    if (user.role !== 'ADMIN') {
+      user.ensureCanLogin();
+    }
 
     return user;
   }

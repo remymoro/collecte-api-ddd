@@ -5,6 +5,7 @@ import { Store } from '@domain/store/store.entity';
 import { StoreStatus } from '@domain/store/enums/store-status.enum';
 import type { StoreRepository } from '@domain/store/store.repository';
 import { STORE_REPOSITORY } from '@domain/store/store.tokens';
+import { CenterId } from '@domain/center/value-objects/center-id.vo';
 
 export interface ListStoresInput {
   centerId?: string;
@@ -22,7 +23,7 @@ export class ListStoresUseCase {
 
   async execute(input: ListStoresInput): Promise<Store[]> {
     return this.storeRepository.findAll({
-      centerId: input.centerId,
+      centerId: input.centerId ? CenterId.from(input.centerId) : undefined,
       city: input.city,
       status: input.status,
       statusIn: input.statusIn,

@@ -4,6 +4,7 @@ import { CollecteEntry } from '@domain/collecte/collecte-entry.entity';
 import type { ProductRepository } from '@domain/product/product.repository';
 import { ProductNotFoundError } from '@domain/product/errors/product-not-found.error';
 import { ProductArchivedError } from '@domain/product/errors/product-archived.error';
+import { CollecteEntryId } from '@domain/collecte/value-objects/collecte-entry-id.vo';
 export type AddItemInput = {
   productRef: string;
   weightKg: number;
@@ -20,7 +21,7 @@ export class AddItemUseCase {
   ) {}
 
   async execute(entryId: string, input: AddItemInput): Promise<CollecteEntry> {
-  const entry = await this.entryRepo.findById(entryId);
+  const entry = await this.entryRepo.findById(CollecteEntryId.from(entryId));
 
   const product = await this.productRepo.findByReference(input.productRef);
   if (!product) {

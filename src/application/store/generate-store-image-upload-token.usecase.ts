@@ -9,6 +9,8 @@ import crypto from 'crypto';
 import type { CenterRepository } from '@domain/center/center.repository';
 import { CENTER_REPOSITORY } from '@domain/center/center.tokens';
 import { CenterNotFoundError } from '@domain/center/errors';
+import { StoreId } from '@domain/store/value-objects/store-id.vo';
+import { CenterId } from '@domain/center/value-objects/center-id.vo';
 
 export interface GenerateStoreImageUploadTokenInput {
   storeId: string;
@@ -57,10 +59,10 @@ export class GenerateStoreImageUploadTokenUseCase {
     input: GenerateStoreImageUploadTokenInput,
   ): Promise<GenerateStoreImageUploadTokenOutput> {
     // 1. Vérifier que le Store existe (sécurité : pas de SAS pour stores inexistants)
-    const store = await this.storeRepository.findById(input.storeId);
+    const store = await this.storeRepository.findById(StoreId.from(input.storeId));
 
     // 1.b Vérifier que le Center du store est actif (center inactif = lecture seule)
-    const center = await this.centerRepository.findById(store.centerId);
+    const center = await this.centerRepository.findById(CenterId.from(store.centerId));
     if (!center) {
       throw new CenterNotFoundError(store.centerId);
     }

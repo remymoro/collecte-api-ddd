@@ -2,26 +2,42 @@ import { RemoveItemUseCase } from '../../../application/collecte/remove-item.use
 import { InMemoryCollecteEntryRepository } from '../../../infrastructure/collecte/in-memory-collecte-entry.repository';
 import { CollecteEntry } from '@domain/collecte/collecte-entry.entity';
 import { EntryAlreadyValidatedError } from '@domain/collecte/errors/entry-already-validated.error';
+import { CampaignId } from '@domain/campaign/value-objects/campaign-id.vo';
+import { StoreId } from '@domain/store/value-objects/store-id.vo';
+import { CenterId } from '@domain/center/value-objects/center-id.vo';
+import { UserId } from '@domain/user/value-objects/user-id.vo';
 
 describe('RemoveItemUseCase', () => {
   let repository: InMemoryCollecteEntryRepository;
   let useCase: RemoveItemUseCase;
+  let context: {
+    campaignId: CampaignId;
+    storeId: StoreId;
+    centerId: CenterId;
+    userId: UserId;
+  };
 
   beforeEach(() => {
     repository = new InMemoryCollecteEntryRepository();
     useCase = new RemoveItemUseCase(repository);
+    context = {
+      campaignId: CampaignId.generate(),
+      storeId: StoreId.generate(),
+      centerId: CenterId.generate(),
+      userId: UserId.generate(),
+    };
   });
 
   it('supprime un item par index', async () => {
     // Arrange
-    const entry = new CollecteEntry();
+    const entry = CollecteEntry.create(context);
     entry.addItem({ productRef: 'PROD_1', family: 'F1', weightKg: 10 });
     entry.addItem({ productRef: 'PROD_2', family: 'F2', weightKg: 5 });
     entry.addItem({ productRef: 'PROD_3', family: 'F3', weightKg: 3 });
     await repository.save(entry);
 
     // Act
-    const result = await useCase.execute(entry.id, 1);
+    const result = await useCase.execute(entry.id.toString(), 1);
 
     // Assert
     expect(result.entryItems).toHaveLength(2);
@@ -31,13 +47,13 @@ describe('RemoveItemUseCase', () => {
 
   it('persiste l\'entrée après suppression', async () => {
     // Arrange
-    const entry = new CollecteEntry();
+    const entry = CollecteEntry.create(context);
     entry.addItem({ productRef: 'PROD_1', family: 'F1', weightKg: 10 });
     entry.addItem({ productRef: 'PROD_2', family: 'F2', weightKg: 5 });
     await repository.save(entry);
 
     // Act
-    await useCase.execute(entry.id, 0);
+    await useCase.execute(entry.id.toString(), 0);
 
     // Assert
     const saved = await repository.findById(entry.id);
@@ -47,13 +63,13 @@ describe('RemoveItemUseCase', () => {
 
   it('met à jour le poids total après suppression', async () => {
     // Arrange
-    const entry = new CollecteEntry();
+    const entry = CollecteEntry.create(context);
     entry.addItem({ productRef: 'PROD_1', family: 'F1', weightKg: 10 });
     entry.addItem({ productRef: 'PROD_2', family: 'F2', weightKg: 5 });
     await repository.save(entry);
 
     // Act
-    const result = await useCase.execute(entry.id, 0);
+    const result = await useCase.execute(entry.id.toString(), 0);
 
     // Assert
     expect(result.totalWeightKg).toBe(5);
@@ -61,13 +77,13 @@ describe('RemoveItemUseCase', () => {
 
   it('supprime le premier item', async () => {
     // Arrange
-    const entry = new CollecteEntry();
+    const entry = CollecteEntry.create(context);
     entry.addItem({ productRef: 'PROD_1', family: 'F1', weightKg: 10 });
     entry.addItem({ productRef: 'PROD_2', family: 'F2', weightKg: 5 });
     await repository.save(entry);
 
     // Act
-    const result = await useCase.execute(entry.id, 0);
+    const result = await useCase.execute(entry.id.toString(), 0);
 
     // Assert
     expect(result.entryItems).toHaveLength(1);
@@ -76,13 +92,13 @@ describe('RemoveItemUseCase', () => {
 
   it('supprime le dernier item', async () => {
     // Arrange
-    const entry = new CollecteEntry();
+    const entry = CollecteEntry.create(context);
     entry.addItem({ productRef: 'PROD_1', family: 'F1', weightKg: 10 });
     entry.addItem({ productRef: 'PROD_2', family: 'F2', weightKg: 5 });
     await repository.save(entry);
 
     // Act
-    const result = await useCase.execute(entry.id, 1);
+    const result = await useCase.execute(entry.id.toString(), 1);
 
     // Assert
     expect(result.entryItems).toHaveLength(1);
@@ -91,41 +107,41 @@ describe('RemoveItemUseCase', () => {
 
   it('refuse de supprimer un item d\'une entrée validée', async () => {
     // Arrange
-    const entry = new CollecteEntry();
+    const entry = CollecteEntry.create(context);
     entry.addItem({ productRef: 'PROD_1', family: 'F1', weightKg: 10 });
     entry.validate();
     await repository.save(entry);
 
     // Act & Assert
-    await expect(useCase.execute(entry.id, 0)).rejects.toThrow(
+    await expect(useCase.execute(entry.id.toString(), 0)).rejects.toThrow(
       EntryAlreadyValidatedError,
     );
   });
 
   it('retourne l\'entrée mise à jour', async () => {
     // Arrange
-    const entry = new CollecteEntry();
+    const entry = CollecteEntry.create(context);
     entry.addItem({ productRef: 'PROD_1', family: 'F1', weightKg: 10 });
     entry.addItem({ productRef: 'PROD_2', family: 'F2', weightKg: 5 });
     await repository.save(entry);
 
     // Act
-    const result = await useCase.execute(entry.id, 0);
+    const result = await useCase.execute(entry.id.toString(), 0);
 
     // Assert
     expect(result).toBeInstanceOf(CollecteEntry);
-    expect(result.id).toBe(entry.id);
+    expect(result.id.equals(entry.id)).toBe(true);
     expect(result.entryItems).toHaveLength(1);
   });
 
   it('permet de vider complètement une entrée', async () => {
     // Arrange
-    const entry = new CollecteEntry();
+    const entry = CollecteEntry.create(context);
     entry.addItem({ productRef: 'PROD_1', family: 'F1', weightKg: 10 });
     await repository.save(entry);
 
     // Act
-    const result = await useCase.execute(entry.id, 0);
+    const result = await useCase.execute(entry.id.toString(), 0);
 
     // Assert
     expect(result.entryItems).toHaveLength(0);
@@ -134,7 +150,7 @@ describe('RemoveItemUseCase', () => {
 
   it('conserve les autres items après suppression', async () => {
     // Arrange
-    const entry = new CollecteEntry();
+    const entry = CollecteEntry.create(context);
     entry.addItem({
       productRef: 'PROD_1',
       family: 'Protéines',
@@ -155,7 +171,7 @@ describe('RemoveItemUseCase', () => {
     await repository.save(entry);
 
     // Act
-    await useCase.execute(entry.id, 1); // Supprime PROD_2
+    await useCase.execute(entry.id.toString(), 1); // Supprime PROD_2
 
     // Assert
     const saved = await repository.findById(entry.id);

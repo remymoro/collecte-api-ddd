@@ -27,7 +27,7 @@ export class CenterAccessGuard implements CanActivate {
       );
     }
 
-    if (user.activeCenterId !== centerIdFromRequest) {
+    if (user.centerId !== centerIdFromRequest) {
       throw new ForbiddenException(
         'Access denied: wrong active center',
       );

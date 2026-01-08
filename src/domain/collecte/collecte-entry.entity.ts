@@ -2,7 +2,11 @@ import { EntryStatus } from './enums/entry-status.enum';
 import { Weight } from './value-objects/weight.vo';
 import { EmptyEntryError } from './errors/empty-entry.error';
 import { EntryAlreadyValidatedError } from './errors/entry-already-validated.error';
-import { randomUUID } from 'crypto';
+import { CollecteEntryId } from './value-objects/collecte-entry-id.vo';
+import { CampaignId } from '@domain/campaign/value-objects/campaign-id.vo';
+import { StoreId } from '@domain/store/value-objects/store-id.vo';
+import { CenterId } from '@domain/center/value-objects/center-id.vo';
+import { UserId } from '@domain/user/value-objects/user-id.vo';
 
 type EntryItem = {
   productRef: string;
@@ -18,19 +22,43 @@ export type CollecteEntryItemSnapshot = {
   weightKg: number;
 };
 
+export type CollecteEntryContext = {
+  campaignId: CampaignId;
+  storeId: StoreId;
+  centerId: CenterId;
+  userId: UserId;
+};
+
 export class CollecteEntry {
-  private readonly _id: string;
+  private readonly _id: CollecteEntryId;
+  private readonly _campaignId: CampaignId;
+  private readonly _storeId: StoreId;
+  private readonly _centerId: CenterId;
+  private readonly _createdBy: UserId;
   private _status: EntryStatus = EntryStatus.EN_COURS;
   private readonly items: EntryItem[] = [];
   private readonly _createdAt: Date;
   private _validatedAt?: Date;
 
-  constructor(id: string = randomUUID(), createdAt: Date = new Date()) {
+  private constructor(
+    context: CollecteEntryContext,
+    id: CollecteEntryId = CollecteEntryId.generate(),
+    createdAt: Date = new Date(),
+  ) {
     this._id = id;
     this._createdAt = createdAt;
+
+    this._campaignId = context.campaignId;
+    this._storeId = context.storeId;
+    this._centerId = context.centerId;
+    this._createdBy = context.userId;
   }
 
-  get id(): string {
+  static create(context: CollecteEntryContext): CollecteEntry {
+    return new CollecteEntry(context);
+  }
+
+  get id(): CollecteEntryId {
     return this._id;
   }
 
@@ -46,6 +74,22 @@ export class CollecteEntry {
     return this._validatedAt;
   }
 
+  get campaignId(): CampaignId {
+    return this._campaignId;
+  }
+
+  get storeId(): StoreId {
+    return this._storeId;
+  }
+
+  get centerId(): CenterId {
+    return this._centerId;
+  }
+
+  get createdBy(): UserId {
+    return this._createdBy;
+  }
+
   get itemsSnapshot(): ReadonlyArray<CollecteEntryItemSnapshot> {
     return this.items.map((item) => ({
       productRef: item.productRef,
@@ -57,7 +101,23 @@ export class CollecteEntry {
 
   // Backward compatibility getters
   get entryId(): string {
-    return this._id;
+    return this._id.toString();
+  }
+
+  get entryCampaignId(): string {
+    return this._campaignId.toString();
+  }
+
+  get entryStoreId(): string {
+    return this._storeId.toString();
+  }
+
+  get entryCenterId(): string {
+    return this._centerId.toString();
+  }
+
+  get entryCreatedBy(): string {
+    return this._createdBy.toString();
   }
 
   get entryStatus(): EntryStatus {
@@ -76,14 +136,17 @@ export class CollecteEntry {
     return this.itemsSnapshot;
   }
 
+
+
   static rehydrate(props: {
-    id: string;
+    id: CollecteEntryId;
+    context: CollecteEntryContext;
     status: EntryStatus;
     createdAt: Date;
     validatedAt?: Date;
     items?: CollecteEntryItemSnapshot[];
   }): CollecteEntry {
-    const entry = new CollecteEntry(props.id, props.createdAt);
+    const entry = new CollecteEntry(props.context, props.id, props.createdAt);
 
     if (props.items) {
       for (const item of props.items) {

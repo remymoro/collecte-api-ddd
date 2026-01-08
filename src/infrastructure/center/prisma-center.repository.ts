@@ -2,6 +2,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { Center } from '@domain/center/center.entity';
+import { CenterId } from '@domain/center/value-objects/center-id.vo';
 import { CenterRepository } from '@domain/center/center.repository';
 import { PrismaService } from '@infrastructure/persistence/prisma/prisma.service';
 import { CenterMapper } from './center.mapper';
@@ -13,9 +14,9 @@ export class PrismaCenterRepository implements CenterRepository {
   /**
    * ✅ Trouve un centre par ID
    */
-  async findById(id: string): Promise<Center | null> {
+  async findById(id: CenterId): Promise<Center | null> {
     const row = await this.prisma.center.findUnique({
-      where: { id },
+      where: { id: id.toString() },
     });
 
     if (!row) return null;
@@ -62,7 +63,7 @@ export class PrismaCenterRepository implements CenterRepository {
     const data = CenterMapper.toPersistence(center);
 
     await this.prisma.center.upsert({
-      where: { id: center.id },
+      where: { id: center.id.toString() },
       create: data,
       update: data,
     });
@@ -71,9 +72,9 @@ export class PrismaCenterRepository implements CenterRepository {
   /**
    * ✅ Supprime un centre par ID
    */
-  async delete(id: string): Promise<void> {
+  async delete(id: CenterId): Promise<void> {
     await this.prisma.center.delete({
-      where: { id },
+      where: { id: id.toString() },
     });
   }
 }

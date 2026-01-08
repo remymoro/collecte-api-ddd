@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import type { CampaignRepository, CampaignFilters } from
   '@domain/campaign/campaign.repository';
 import { Campaign } from '@domain/campaign/campaign.entity';
+import { CampaignId } from '@domain/campaign/value-objects/campaign-id.vo';
 import { CampaignStatus } from '@domain/campaign/enums/campaign-status.enum';
 import { PersistenceError } from '@domain/errors/persistence.error';
 
@@ -37,7 +38,7 @@ export class PrismaCampaignRepository implements CampaignRepository {
   async update(campaign: Campaign): Promise<void> {
     try {
       await this.prisma.campaign.update({
-        where: { id: campaign.id },
+        where: { id: campaign.id.toString() },
         data: CampaignMapper.toPrisma(campaign),
       });
     } catch {
@@ -48,9 +49,9 @@ export class PrismaCampaignRepository implements CampaignRepository {
   // =========================
   // READ
   // =========================
-  async findById(id: string): Promise<Campaign | null> {
+  async findById(id: CampaignId): Promise<Campaign | null> {
     const campaign = await this.prisma.campaign.findUnique({
-      where: { id },
+      where: { id: id.toString() },
     });
 
     return campaign ? CampaignMapper.toDomain(campaign) : null;

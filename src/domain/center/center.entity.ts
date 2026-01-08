@@ -1,6 +1,5 @@
-import { randomUUID } from 'crypto';
-
 import { CenterInactiveReadOnlyError } from './errors/center-inactive-read-only.error';
+import { CenterId } from './value-objects/center-id.vo';
 
 export type CreateCenterProps = {
   name: string;
@@ -10,7 +9,7 @@ export type CreateCenterProps = {
 };
 
 export type RehydrateCenterProps = {
-  id: string;
+  id: CenterId;
   name: string;
   address: string;
   city: string;
@@ -20,7 +19,7 @@ export type RehydrateCenterProps = {
 
 export class Center {
   private constructor(
-    readonly id: string,
+    readonly id: CenterId,
     readonly name: string,
     readonly address: string,
     readonly city: string,
@@ -31,7 +30,7 @@ export class Center {
   /** 🟢 Création métier */
   static create(props: CreateCenterProps): Center {
     return new Center(
-      randomUUID(),
+      CenterId.generate(),
       props.name.trim(),
       props.address.trim(),
       props.city.trim(),
@@ -77,7 +76,7 @@ export class Center {
    */
   assertActive(): void {
     if (!this.isActive) {
-      throw new CenterInactiveReadOnlyError(this.id);
+      throw new CenterInactiveReadOnlyError(this.id.toString());
     }
   }
 

@@ -132,7 +132,7 @@ export class StoreController {
   ): Promise<StoreDetailDto> {
     const store = await this.markUnavailable.execute({
       storeId: id,
-      userId: user.sub,
+      userId: user.userId,
       reason: dto.reason,
     });
 
@@ -147,27 +147,28 @@ export class StoreController {
   ): Promise<StoreDetailDto> {
     const store = await this.markAvailable.execute({
       storeId: id,
-      userId: user.sub,
+      userId: user.userId,
     });
 
     return this.toDetailDto(store);
   }
 
-  @Patch(':id/close')
-  @Roles('ADMIN')
-  async close(
-    @Param('id') id: string,
-    @Body() dto: CloseStoreDto,
-    @CurrentUser() user: AuthenticatedUser,
-  ): Promise<StoreDetailDto> {
-    const store = await this.closeStore.execute({
-      storeId: id,
-      userId: user.sub,
-      reason: dto.reason ?? 'Fermeture définitive',
-    });
+ @Patch(':id/close')
+@Roles('ADMIN')
+async close(
+  @Param('id') id: string,
+  @Body() dto: CloseStoreDto,
+  @CurrentUser() user: AuthenticatedUser,
+): Promise<StoreDetailDto> {
+  const store = await this.closeStore.execute({
+    storeId: id,
+    userId: user.userId, // ✅ CORRECT
+    reason: dto.reason ?? 'Fermeture définitive',
+  });
 
-    return this.toDetailDto(store);
-  }
+  return this.toDetailDto(store);
+}
+
 
   // ============================
   // IMAGES
@@ -235,8 +236,8 @@ export class StoreController {
 
  private toViewDto(store: Store): StoreViewDto {
   return {
-    id: store.id,
-    centerId: store.centerId,
+    id: store.id.toString(),
+    centerId: store.centerId.toString(),
     name: store.name,
     city: store.city,
     postalCode: store.postalCode,
@@ -260,7 +261,7 @@ export class StoreController {
 
  private toImagesDto(store: Store) {
   return {
-    id: store.id,
+    id: store.id.toString(),
     images: store.images.map((img: StoreImage) => ({
       url: img.url,
       isPrimary: img.isPrimary,

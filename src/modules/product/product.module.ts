@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ProductController } from '../../presentation/product/product.controller';
+import { ProductQueryController } from '../../presentation/product/product-query.controller';
 import { CreateProductUseCase } from '../../application/product/create-product.usecase';
 import { UpdateProductUseCase } from '../../application/product/update-product.usecase';
 import { PrismaProductRepository } from '../../infrastructure/product/prisma-product.repository';
@@ -10,7 +11,7 @@ import { ArchiveProductUseCase } from '../../application/product/archive-product
   imports: [
     PrismaModule, // fournit PrismaService
   ],
-  controllers: [ProductController],
+  controllers: [ProductController, ProductQueryController],
   providers: [
     CreateProductUseCase,
     UpdateProductUseCase,

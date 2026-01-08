@@ -41,6 +41,8 @@ import { JwtStrategy } from '@infrastructure/auth/strategies/jwt.strategy';
   },
 ],
 
+  exports: [TOKEN_SERVICE, PASSWORD_HASHER],
+
   
 })
 export class AuthModule {}

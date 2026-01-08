@@ -1,7 +1,7 @@
 export type JwtPayload = {
   sub: string;
   role: 'ADMIN' | 'BENEVOLE';
-  activeCenterId: string;
+  centerId: string;
   iat: number;
   exp: number;
 };

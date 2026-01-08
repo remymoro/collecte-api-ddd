@@ -5,10 +5,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CampaignRepository } from '@domain/campaign/campaign.repository';
 import { CAMPAIGN_REPOSITORY } from '@domain/campaign/campaign.tokens';
 import { CampaignNotFoundError } from '@domain/campaign/errors/campaign-not-found.error';
+import { CampaignId } from '@domain/campaign/value-objects/campaign-id.vo';
 
 import { StoreRepository } from '@domain/store/store.repository';
 import { STORE_REPOSITORY } from '@domain/store/store.tokens';
 import { StoreNotFoundError } from '@domain/store/errors';
+import { StoreId } from '@domain/store/value-objects/store-id.vo';
 
 import {
   CampaignStoreAuthorizationRepository,
@@ -52,7 +54,7 @@ export class AuthorizeStoreForCampaignUseCase {
     // ============================
     // 1️⃣ Vérifier que la campagne existe
     // ============================
-    const campaign = await this.campaignRepository.findById(input.campaignId);
+    const campaign = await this.campaignRepository.findById(CampaignId.from(input.campaignId));
 
     if (!campaign) {
       throw new CampaignNotFoundError(input.campaignId);
@@ -61,7 +63,7 @@ export class AuthorizeStoreForCampaignUseCase {
     // ============================
     // 2️⃣ Vérifier que le magasin existe
     // ============================
-    const store = await this.storeRepository.findById(input.storeId);
+    const store = await this.storeRepository.findById(StoreId.from(input.storeId));
 
     if (!store) {
       throw new StoreNotFoundError(input.storeId);

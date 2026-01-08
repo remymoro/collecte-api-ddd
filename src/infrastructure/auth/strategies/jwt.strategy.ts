@@ -15,11 +15,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  validate(payload: JwtPayload): AuthenticatedUser {
-    return {
-      id: payload.sub,
-      role: payload.role,
-      activeCenterId: payload.activeCenterId,
-    };
+ async validate(payload: JwtPayload): Promise<AuthenticatedUser> {
+  return {
+    userId: payload.sub,     // mapping JWT → app
+    role: payload.role,
+    centerId: payload.centerId,
+  };
   }
 }

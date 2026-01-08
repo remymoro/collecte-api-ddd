@@ -6,6 +6,13 @@ import { CollecteEntry } from '@domain/collecte/collecte-entry.entity';
 
 describe('AddItemUseCase (Option B snapshot)', () => {
   it('enrichit la saisie avec family/subFamily du catalogue', async () => {
+    const context = {
+      campaignId: 'campaign-test',
+      storeId: 'store-test',
+      centerId: 'center-test',
+      userId: 'user-test',
+    };
+
     const entryRepo = new InMemoryCollecteEntryRepository();
     const productRepo = new InMemoryProductRepository([
       Product.create({
@@ -15,12 +22,12 @@ describe('AddItemUseCase (Option B snapshot)', () => {
       }),
     ]);
 
-    const draft = new CollecteEntry();
+    const draft = CollecteEntry.create(context);
     await entryRepo.save(draft);
 
     const useCase = new AddItemUseCase(entryRepo, productRepo);
 
-    const entry = await useCase.execute(draft.id, {
+    const entry = await useCase.execute(draft.id.toString(), {
       productRef: '01751144',
       weightKg: 12,
     });

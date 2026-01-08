@@ -14,7 +14,6 @@ import { ValidateEntryUseCase } from '../../application/collecte/validate-entry.
 import { GetEntryUseCase } from '../../application/collecte/get-entry.usecase';
 import { AddItemUseCase } from '../../application/collecte/add-item.usecase';
 import { RemoveItemUseCase } from '../../application/collecte/remove-item.usecase';
-import { CurrentUserPayload, FakeAuthGuard } from '../auth/fake-auth.guard';
 import { AddEntryItemDto } from './dto/add-entry-item.dto';
 import { EntryViewDto } from './dto/entry-view.dto';
 import { EntryCreatedDto } from './dto/entry-created.dto';
@@ -23,10 +22,13 @@ import { EntryDetailDto } from './dto/entry-detail.dto';
 import { EntryItemAddedDto } from './dto/entry-item-added.dto';
 import { EntryItemRemovedDto } from './dto/entry-item-removed.dto';
 import { CurrentUser } from '@presentation/auth/decorators/current-user.decorator';
+import { CreateEntryFromStoreDto } from './dto/create-entry-from-store.dto';
+import { JwtAuthGuard } from '@infrastructure/auth/guards/jwt-auth.guard';
+import { AuthenticatedUser } from '@application/auth/authenticated-user.output';
 
 
-@Controller('collecte')
-@UseGuards(FakeAuthGuard)
+@Controller('collecte-entries')
+@UseGuards(JwtAuthGuard)
 export class CollecteController {
   constructor(
     private readonly createEntryUseCase: CreateEntryUseCase,
@@ -37,15 +39,26 @@ export class CollecteController {
     private readonly removeItemUseCase: RemoveItemUseCase,
   ) {}
 
-  @Post('entries')
+  @Post('')
   async createEntry(
-    @CurrentUser() currentUser: CurrentUserPayload | undefined,
+    @CurrentUser() currentUser: AuthenticatedUser,
+    @Body() body: CreateEntryFromStoreDto,
   ): Promise<EntryCreatedDto> {
-    void currentUser;
-    const entry = await this.createEntryUseCase.execute();
+    const userId = currentUser.userId;
+    const centerId = currentUser.centerId;
 
+    if (!centerId) {
+      throw new Error('Invariant violated: missing centerId in JWT payload');
+    }
+
+    const entry = await this.createEntryUseCase.execute({
+      campaignId: body.campaignId,
+      storeId: body.storeId,
+      centerId,
+      userId,
+    });
     return {
-      id: entry.id,
+      id: entry.id.toString(),
       totalWeightKg: entry.totalWeightKg,
       status: entry.status,
     };
@@ -53,7 +66,7 @@ export class CollecteController {
 
   @Post('entries/:id/validate')
   async validateEntry(
-    @CurrentUser() currentUser: CurrentUserPayload | undefined,
+    @CurrentUser() currentUser: AuthenticatedUser,
     @Param('id') id: string,
   ): Promise<EntryValidatedDto> {
     void currentUser;
@@ -82,7 +95,7 @@ export class CollecteController {
     const entry = await this.getEntryUseCase.execute(id);
 
     return {
-      id: entry.id,
+      id: entry.id.toString(),
       status: entry.status,
       items: entry.itemsSnapshot.map((item) => ({
         productRef: item.productRef,
@@ -121,7 +134,7 @@ export class CollecteController {
 
   @Get('entries')
   async listEntries(
-    @CurrentUser() currentUser: CurrentUserPayload | undefined,
+    @CurrentUser() currentUser: AuthenticatedUser,
   ): Promise<EntryViewDto[]> {
     void currentUser;
     const views = await this.listEntriesUseCase.execute();

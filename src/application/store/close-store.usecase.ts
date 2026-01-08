@@ -2,6 +2,8 @@
 
 import { Injectable, Inject } from '@nestjs/common';
 import { Store } from '@domain/store/store.entity';
+import { StoreId } from '@domain/store/value-objects/store-id.vo';
+import { CenterId } from '@domain/center/value-objects/center-id.vo';
 import { STORE_REPOSITORY } from '@domain/store/store.tokens';
 import type { StoreRepository } from '@domain/store/store.repository';
 import type { CenterRepository } from '@domain/center/center.repository';
@@ -25,9 +27,9 @@ export class CloseStoreUseCase {
   ) {}
 
   async execute(input: CloseStoreInput): Promise<Store> {
-    const store = await this.storeRepository.findById(input.storeId);
+    const store = await this.storeRepository.findById(StoreId.from(input.storeId));
 
-    const center = await this.centerRepository.findById(store.centerId);
+    const center = await this.centerRepository.findById(CenterId.from(store.centerId));
     if (!center) {
       throw new CenterNotFoundError(store.centerId);
     }

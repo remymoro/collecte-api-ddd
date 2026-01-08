@@ -1,7 +1,7 @@
 import { UserRole } from '@domain/user/type/user-role.type';
 
 export type AuthenticatedUser = {
-  id: string;
+  userId: string;
   role: UserRole;
-  activeCenterId: string;
+  centerId?: string; // optionnel selon le rôle
 };

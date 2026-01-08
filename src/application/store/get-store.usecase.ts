@@ -2,6 +2,7 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { Store } from '@domain/store/store.entity';
+import { StoreId } from '@domain/store/value-objects/store-id.vo';
 import type { StoreRepository } from '@domain/store/store.repository';
 import { STORE_REPOSITORY } from '@domain/store/store.tokens';
 
@@ -17,6 +18,6 @@ export class GetStoreUseCase {
   ) {}
 
   async execute(input: GetStoreInput): Promise<Store> {
-    return this.storeRepository.findById(input.storeId);
+    return this.storeRepository.findById(StoreId.from(input.storeId));
   }
 }

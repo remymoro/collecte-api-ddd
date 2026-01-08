@@ -1,13 +1,14 @@
 // src/infrastructure/campaign/campaign.mapper.ts
 
 import { Campaign } from '@domain/campaign/campaign.entity';
+import { CampaignId } from '@domain/campaign/value-objects/campaign-id.vo';
 import { CampaignStatus } from '@domain/campaign/enums/campaign-status.enum';
 import type { Campaign as PrismaCampaign } from '@generated/prisma/client';
 
 export class CampaignMapper {
   static toDomain(prisma: PrismaCampaign): Campaign {
     return Campaign.rehydrate({
-      id: prisma.id,
+      id: CampaignId.from(prisma.id),
       name: prisma.name,
       year: prisma.year,
       startDate: prisma.startDate,
@@ -26,7 +27,7 @@ export class CampaignMapper {
 
   static toPrisma(domain: Campaign) {
     return {
-      id: domain.id,
+      id: domain.id.toString(),
       name: domain.name,
       year: domain.year,
       startDate: domain.startDate,

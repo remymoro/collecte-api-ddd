@@ -8,6 +8,7 @@ import { StoreAlreadyExistsAtAddressError } from '@domain/store/errors/store-alr
 import type { CenterRepository } from '@domain/center/center.repository';
 import { CENTER_REPOSITORY } from '@domain/center/center.tokens';
 import { CenterNotFoundError } from '@domain/center/errors';
+import { CenterId } from '@domain/center/value-objects/center-id.vo';
 
 export interface CreateStoreInput {
   centerId: string;
@@ -30,7 +31,7 @@ export class CreateStoreUseCase {
   ) {}
 
   async execute(input: CreateStoreInput): Promise<Store> {
-    const center = await this.centerRepository.findById(input.centerId);
+    const center = await this.centerRepository.findById(CenterId.from(input.centerId));
     if (!center) {
       throw new CenterNotFoundError(input.centerId);
     }
@@ -40,7 +41,7 @@ export class CreateStoreUseCase {
     // Vérifier l'unicité métier : centerId + address
     // Un même centre peut avoir plusieurs Lidl, MAIS pas à la même adresse
     const existingStore = await this.storeRepository.findByCenterIdAndAddress(
-      input.centerId,
+      CenterId.from(input.centerId),
       input.address,
       input.city,
       input.postalCode,

@@ -4,6 +4,8 @@ import type {
   StoreFilters,
 } from '@domain/store/store.repository';
 import { Store } from '@domain/store/store.entity';
+import { StoreId } from '@domain/store/value-objects/store-id.vo';
+import { CenterId } from '@domain/center/value-objects/center-id.vo';
 import { StoreNotFoundError } from '@domain/store/errors';
 import { PersistenceError } from '@domain/errors/persistence.error';
 import { PrismaService } from '../persistence/prisma/prisma.service';
@@ -30,7 +32,7 @@ export class PrismaStoreRepository implements StoreRepository {
 
     try {
       await this.prisma.store.upsert({
-        where: { id: store.id },
+        where: { id: store.id.toString() },
         create: data,
         update: {
           name: data.name,
@@ -56,9 +58,9 @@ export class PrismaStoreRepository implements StoreRepository {
   // FIND BY ID
   // ============================
 
-  async findById(id: string): Promise<Store> {
+  async findById(id: StoreId): Promise<Store> {
     const store = await this.prisma.store.findUnique({
-      where: { id },
+      where: { id: id.toString() },
       select: {
         id: true,
         centerId: true,
@@ -79,7 +81,7 @@ export class PrismaStoreRepository implements StoreRepository {
     });
 
     if (!store) {
-      throw new StoreNotFoundError(id);
+      throw new StoreNotFoundError(id.toString());
     }
 
     return StoreMapper.toDomain(store);
@@ -92,7 +94,7 @@ export class PrismaStoreRepository implements StoreRepository {
   async findAll(filters?: StoreFilters): Promise<Store[]> {
     const stores = await this.prisma.store.findMany({
       where: {
-        centerId: filters?.centerId,
+        centerId: filters?.centerId?.toString(),
         city: filters?.city,
         status: filters?.status,
         ...(filters?.statusIn && {
@@ -131,14 +133,14 @@ export class PrismaStoreRepository implements StoreRepository {
   // ============================
 
   async findByCenterIdAndAddress(
-    centerId: string,
+    centerId: CenterId,
     address: string,
     city: string,
     postalCode: string,
   ): Promise<Store | null> {
     const store = await this.prisma.store.findFirst({
       where: {
-        centerId,
+        centerId: centerId.toString(),
         address,
         city,
         postalCode,
@@ -172,11 +174,11 @@ export class PrismaStoreRepository implements StoreRepository {
 
 async findAvailableForCampaignAndCenter(
   campaignId: string,
-  centerId: string,
+  centerId: CenterId,
 ): Promise<Store[]> {
   const stores = await this.prisma.store.findMany({
     where: {
-      centerId,
+      centerId: centerId.toString(),
       authorizations: {
         some: {
           campaignId,

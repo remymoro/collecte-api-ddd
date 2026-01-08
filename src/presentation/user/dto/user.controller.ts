@@ -27,10 +27,10 @@ export class UserController {
     const user = await this.createUserForCenter.execute(dto);
 
     return {
-      id: user.id,
+      id: user.id.toString(),
       username: user.username,
       role: user.role,
-      centerId: user.centerId,
+      centerId: user.centerId?.toString() ?? null,
     };
   }
 }

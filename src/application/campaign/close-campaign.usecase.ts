@@ -2,6 +2,7 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { Campaign } from '@domain/campaign/campaign.entity';
+import { CampaignId } from '@domain/campaign/value-objects/campaign-id.vo';
 import type { CampaignRepository } from '@domain/campaign/campaign.repository';
 import { CAMPAIGN_REPOSITORY } from '@domain/campaign/campaign.tokens';
 import { CampaignNotFoundError } from '@domain/campaign/errors/campaign-not-found.error';
@@ -19,7 +20,8 @@ export class CloseCampaignUseCase {
   ) {}
 
  async execute(input: CloseCampaignInput): Promise<Campaign> {
-  const campaign = await this.campaignRepository.findById(input.campaignId);
+  const id = CampaignId.from(input.campaignId);
+  const campaign = await this.campaignRepository.findById(id);
 
   if (!campaign) {
     throw new CampaignNotFoundError(input.campaignId);

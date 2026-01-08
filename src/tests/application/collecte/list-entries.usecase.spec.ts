@@ -7,6 +7,13 @@ describe('ListEntriesUseCase', () => {
   let repository: InMemoryCollecteEntryRepository;
   let useCase: ListEntriesUseCase;
 
+  const context = {
+    campaignId: 'campaign-test',
+    storeId: 'store-test',
+    centerId: 'center-test',
+    userId: 'user-test',
+  };
+
   beforeEach(() => {
     repository = new InMemoryCollecteEntryRepository();
     useCase = new ListEntriesUseCase(repository);
@@ -22,15 +29,15 @@ describe('ListEntriesUseCase', () => {
 
   it('retourne toutes les entrées', async () => {
     // Arrange
-    const entry1 = new CollecteEntry();
+    const entry1 = CollecteEntry.create(context);
     entry1.addItem({ productRef: 'PROD_1', family: 'F1', weightKg: 10 });
     await repository.save(entry1);
 
-    const entry2 = new CollecteEntry();
+    const entry2 = CollecteEntry.create(context);
     entry2.addItem({ productRef: 'PROD_2', family: 'F2', weightKg: 5 });
     await repository.save(entry2);
 
-    const entry3 = new CollecteEntry();
+    const entry3 = CollecteEntry.create(context);
     entry3.addItem({ productRef: 'PROD_3', family: 'F3', weightKg: 3 });
     await repository.save(entry3);
 
@@ -43,12 +50,12 @@ describe('ListEntriesUseCase', () => {
 
   it('retourne le totalWeightKg pour chaque entrée', async () => {
     // Arrange
-    const entry1 = new CollecteEntry();
+    const entry1 = CollecteEntry.create(context);
     entry1.addItem({ productRef: 'PROD_1', family: 'F1', weightKg: 10 });
     entry1.addItem({ productRef: 'PROD_2', family: 'F2', weightKg: 5 });
     await repository.save(entry1);
 
-    const entry2 = new CollecteEntry();
+    const entry2 = CollecteEntry.create(context);
     entry2.addItem({ productRef: 'PROD_3', family: 'F3', weightKg: 7 });
     await repository.save(entry2);
 
@@ -62,11 +69,11 @@ describe('ListEntriesUseCase', () => {
 
   it('retourne le status pour chaque entrée', async () => {
     // Arrange
-    const enCours = new CollecteEntry();
+    const enCours = CollecteEntry.create(context);
     enCours.addItem({ productRef: 'PROD_1', family: 'F1', weightKg: 10 });
     await repository.save(enCours);
 
-    const validee = new CollecteEntry();
+    const validee = CollecteEntry.create(context);
     validee.addItem({ productRef: 'PROD_2', family: 'F2', weightKg: 5 });
     validee.validate();
     await repository.save(validee);
@@ -84,11 +91,23 @@ describe('ListEntriesUseCase', () => {
     const date1 = new Date('2024-01-15T10:00:00Z');
     const date2 = new Date('2024-01-16T14:30:00Z');
 
-    const entry1 = new CollecteEntry('entry-1', date1);
+    const entry1 = CollecteEntry.rehydrate({
+      id: 'entry-1',
+      context,
+      status: EntryStatus.EN_COURS,
+      createdAt: date1,
+      items: [],
+    });
     entry1.addItem({ productRef: 'PROD_1', family: 'F1', weightKg: 10 });
     await repository.save(entry1);
 
-    const entry2 = new CollecteEntry('entry-2', date2);
+    const entry2 = CollecteEntry.rehydrate({
+      id: 'entry-2',
+      context,
+      status: EntryStatus.EN_COURS,
+      createdAt: date2,
+      items: [],
+    });
     entry2.addItem({ productRef: 'PROD_2', family: 'F2', weightKg: 5 });
     await repository.save(entry2);
 
@@ -102,16 +121,16 @@ describe('ListEntriesUseCase', () => {
 
   it('retourne les entrées EN_COURS et VALIDEE', async () => {
     // Arrange
-    const entry1 = new CollecteEntry();
+    const entry1 = CollecteEntry.create(context);
     entry1.addItem({ productRef: 'PROD_1', family: 'F1', weightKg: 10 });
     await repository.save(entry1);
 
-    const entry2 = new CollecteEntry();
+    const entry2 = CollecteEntry.create(context);
     entry2.addItem({ productRef: 'PROD_2', family: 'F2', weightKg: 5 });
     entry2.validate();
     await repository.save(entry2);
 
-    const entry3 = new CollecteEntry();
+    const entry3 = CollecteEntry.create(context);
     entry3.addItem({ productRef: 'PROD_3', family: 'F3', weightKg: 3 });
     await repository.save(entry3);
 
@@ -127,7 +146,7 @@ describe('ListEntriesUseCase', () => {
 
   it('retourne une vue simplifiée (sans items)', async () => {
     // Arrange
-    const entry = new CollecteEntry();
+    const entry = CollecteEntry.create(context);
     entry.addItem({
       productRef: 'PROD_1',
       family: 'Protéines',
@@ -157,10 +176,10 @@ describe('ListEntriesUseCase', () => {
 
   it('gère correctement les entrées vides', async () => {
     // Arrange
-    const emptyEntry = new CollecteEntry();
+    const emptyEntry = CollecteEntry.create(context);
     await repository.save(emptyEntry);
 
-    const filledEntry = new CollecteEntry();
+    const filledEntry = CollecteEntry.create(context);
     filledEntry.addItem({ productRef: 'PROD_1', family: 'F1', weightKg: 10 });
     await repository.save(filledEntry);
 
@@ -175,7 +194,7 @@ describe('ListEntriesUseCase', () => {
 
   it('calcule correctement les totaux avec arrondis', async () => {
     // Arrange
-    const entry = new CollecteEntry();
+    const entry = CollecteEntry.create(context);
     entry.addItem({ productRef: 'PROD_1', family: 'F1', weightKg: 5.3 }); // → 6
     entry.addItem({ productRef: 'PROD_2', family: 'F2', weightKg: 2.7 }); // → 3
     await repository.save(entry);
@@ -196,7 +215,13 @@ describe('ListEntriesUseCase', () => {
     ];
 
     for (let i = 0; i < 3; i++) {
-      const entry = new CollecteEntry(`entry-${i}`, dates[i]);
+      const entry = CollecteEntry.rehydrate({
+        id: `entry-${i}`,
+        context,
+        status: EntryStatus.EN_COURS,
+        createdAt: dates[i],
+        items: [],
+      });
       entry.addItem({ productRef: `PROD_${i}`, family: 'F1', weightKg: i + 1 });
       await repository.save(entry);
     }

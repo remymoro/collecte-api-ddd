@@ -1,8 +1,14 @@
 import type { EntryStatus } from '@domain/collecte/enums/entry-status.enum';
 import {
   CollecteEntry,
+  type CollecteEntryContext,
   type CollecteEntryItemSnapshot,
 } from '@domain/collecte/collecte-entry.entity';
+import { CollecteEntryId } from '@domain/collecte/value-objects/collecte-entry-id.vo';
+import { CampaignId } from '@domain/campaign/value-objects/campaign-id.vo';
+import { StoreId } from '@domain/store/value-objects/store-id.vo';
+import { CenterId } from '@domain/center/value-objects/center-id.vo';
+import { UserId } from '@domain/user/value-objects/user-id.vo';
 
 /**
  * Mapper between Domain CollecteEntry and Prisma models
@@ -15,7 +21,7 @@ export class CollecteEntryMapper {
 
   static toPrisma(entry: CollecteEntry) {
     return {
-      id: entry.id,
+      id: entry.id.toString(),
       status: entry.status,
       totalKg: entry.totalWeightKg,
       createdAt: entry.createdAt,
@@ -44,8 +50,16 @@ export class CollecteEntryMapper {
       weightKg: toNumber(item.weightKg),
     }));
 
+    const context: CollecteEntryContext = {
+      campaignId: CampaignId.from(raw.campaignId),
+      storeId: StoreId.from(raw.storeId),
+      centerId: CenterId.from(raw.centerId),
+      userId: UserId.from(raw.createdBy),
+    };
+
     return CollecteEntry.rehydrate({
-      id: raw.id,
+      id: CollecteEntryId.from(raw.id),
+      context,
       status: raw.status as EntryStatus,
       createdAt: raw.createdAt,
       validatedAt: raw.validatedAt ?? undefined,
@@ -66,6 +80,10 @@ type RawCollecteEntryItem = {
 export type RawCollecteEntryWithItems = {
   id: string;
   status: string;
+  campaignId: string;
+  storeId: string;
+  centerId: string;
+  createdBy: string;
   createdAt: Date;
   validatedAt: Date | null;
   items: RawCollecteEntryItem[];

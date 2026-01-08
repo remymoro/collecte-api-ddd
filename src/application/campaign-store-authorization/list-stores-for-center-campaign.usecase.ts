@@ -9,6 +9,7 @@ import type { CampaignStoreAuthorizationRepository } from '@domain/campaign-stor
 import { CAMPAIGN_STORE_AUTHORIZATION_REPOSITORY } from '@domain/campaign-store-authorization/campaign-store-authorization.tokens';
 
 import type { StoreAuthorizationView } from '@presentation/campaign-store-authorization/dto/store-authorization.view';
+import { CenterId } from '@domain/center/value-objects/center-id.vo';
 
 
 type ListStoresForCenterCampaignInput = {
@@ -32,11 +33,11 @@ export class ListStoresForCenterCampaignUseCase {
     const { campaignId, centerId } = input;
 
     // 1️⃣ Charger TOUS les magasins du centre
-    const stores = await this.storeRepository.findAll({ centerId });
+    const stores = await this.storeRepository.findAll({ centerId: CenterId.from(centerId) });
 
     // 2️⃣ Charger les autorisations existantes pour ces magasins (bulk)
     //    → permet de distinguer INACTIVE (existe) de NONE (n'existe pas)
-    const storeIds = stores.map((s) => s.id);
+    const storeIds = stores.map((s) => s.id.toString());
     const authorizations = await this.authorizationRepository.findByCampaignAndStoreIds(
       campaignId,
       storeIds,
@@ -48,10 +49,10 @@ export class ListStoresForCenterCampaignUseCase {
 
     // 3️⃣ Construire une vue métier lisible pour l’UI
     return stores.map((store) => {
-      const status = statusByStoreId.get(store.id);
+      const status = statusByStoreId.get(store.id.toString());
 
       return {
-        storeId: store.id,
+        storeId: store.id.toString(),
         storeName: store.name,
         address: store.address,
         authorizationStatus: status ?? 'NONE',

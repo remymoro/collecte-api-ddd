@@ -5,6 +5,7 @@ import { STORE_REPOSITORY } from "@domain/store/store.tokens";
 import { UserRepository } from "@domain/user/user.repository";
 import { USER_REPOSITORY } from "@domain/user/user.tokens";
 import { Injectable, Inject } from "@nestjs/common";
+import { UserId } from "@domain/user/value-objects/user-id.vo";
 
 
 
@@ -44,7 +45,7 @@ export class GetAvailableStoresForBenevoleUseCase {
     input: GetAvailableStoresForBenevoleInput,
   ): Promise<GetAvailableStoresForBenevoleOutput> {
     // 1️⃣ Charger le bénévole
-    const user = await this.userRepository.findById(input.userId);
+    const user = await this.userRepository.findById(UserId.from(input.userId));
 
     if (!user || !user.centerId) {
       return { stores: [] };
@@ -53,7 +54,7 @@ export class GetAvailableStoresForBenevoleUseCase {
     // 2️⃣ Vérifier qu’une campagne accepte les saisies
     const campaign =
       await this.campaignRepository.findCampaignAcceptingEntriesForCenter(
-        user.centerId,
+        user.centerId.toString(),
       );
 
     if (!campaign) {
@@ -63,16 +64,16 @@ export class GetAvailableStoresForBenevoleUseCase {
     // 3️⃣ Récupérer les magasins disponibles pour ce centre et cette campagne
     const stores =
       await this.storeRepository.findAvailableForCampaignAndCenter(
-        campaign.id,
+        campaign.id.toString(),
         user.centerId,
       );
 
     // 4️⃣ Mapping DTO
   return {
   stores: stores.map((store) => ({
-    id: store.id,
+    id: store.id.toString(),
     name: store.name,
-    campaignId: campaign.id,
+    campaignId: campaign.id.toString(),
     imageUrl: store.images.find((img) => img.isPrimary)?.url
       ?? store.images[0]?.url
       ?? undefined,

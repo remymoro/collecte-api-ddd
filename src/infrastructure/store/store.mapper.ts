@@ -1,6 +1,7 @@
 // src/infrastructure/store/store.mapper.ts
 
 import { Store } from '@domain/store/store.entity';
+import { StoreId } from '@domain/store/value-objects/store-id.vo';
 import { StoreStatus } from '@domain/store/enums/store-status.enum';
 import { StoreImage } from '@domain/store/value-objects/store-image.vo';
 import type { Store as PrismaStore } from '@generated/prisma/client';
@@ -13,7 +14,7 @@ export class StoreMapper {
 
   static toDomain(prisma: PrismaStore): Store {
     return Store.rehydrate({
-      id: prisma.id,
+      id: StoreId.from(prisma.id),
       centerId: prisma.centerId,
       name: prisma.name,
       address: prisma.address,
@@ -37,7 +38,7 @@ export class StoreMapper {
 
   static toPrisma(domain: Store) {
     return {
-      id: domain.id,
+      id: domain.id.toString(),
       centerId: domain.centerId,
       name: domain.name,
       address: domain.address,

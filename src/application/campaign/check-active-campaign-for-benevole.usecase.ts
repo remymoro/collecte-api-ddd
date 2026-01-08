@@ -6,6 +6,7 @@ import { UserRepository } from '@domain/user/user.repository';
 import { USER_REPOSITORY } from '@domain/user/user.tokens';
 import { CampaignRepository } from '@domain/campaign/campaign.repository';
 import { CAMPAIGN_REPOSITORY } from '@domain/campaign/campaign.tokens';
+import { UserId } from '@domain/user/value-objects/user-id.vo';
 
 // ============================
 // INPUT / OUTPUT
@@ -36,7 +37,7 @@ export class CheckCampaignAcceptingEntriesForBenevoleUseCase {
     input: CheckCampaignAcceptingEntriesForBenevoleInput,
   ): Promise<CheckCampaignAcceptingEntriesForBenevoleOutput> {
     // 1. Récupérer le bénévole
-    const user = await this.userRepository.findById(input.userId);
+    const user = await this.userRepository.findById(UserId.from(input.userId));
 
     // Si l'utilisateur n'existe pas ou n'est pas rattaché à un centre
     if (!user || !user.centerId) {
@@ -46,7 +47,7 @@ export class CheckCampaignAcceptingEntriesForBenevoleUseCase {
     // 2. Chercher une campagne acceptant encore les saisies pour ce centre
     const campaign =
       await this.campaignRepository.findCampaignAcceptingEntriesForCenter(
-        user.centerId,
+        user.centerId.toString(),
       );
 
     // 3. Résultat métier explicite
